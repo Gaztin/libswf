@@ -9,13 +9,12 @@ int main( int /*argc*/, char* /*argv*/[] )
 
 	printf( "~~ %s ~~\n", filepath );
 
-	swf_movie_t* movie = swf_load( "image.swf" );
-	if( movie == nullptr )
+	swf_movie movie;
+	if( swf_load( "image.swf", &movie ) < 0 )
 		return -1;
 
-	printf( "Size: %d\n", movie->size );
+	printf( "Size: %zd\n", movie.size );
 
-	free( movie );
-
+	getchar();
 	return 0;
 }

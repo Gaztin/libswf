@@ -22,13 +22,12 @@
 extern "C" {
 #endif
 
-
 typedef struct
 {
-	int size;
-} swf_movie_t;
+	size_t size;
+} swf_movie;
 
-extern swf_movie_t* swf_load( const char* filepath );
+extern int swf_load( const char* filepath, swf_movie* outMovie );
 
 
 #ifdef __cplusplus
