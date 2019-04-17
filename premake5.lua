@@ -53,12 +53,23 @@ workspace( "libswf" )
   platforms { io.popen("uname -m", "r"):read("*l") }
   configurations { "Debug", "Release" }
 
+group( "ThirdParty" )
+  project( "zlib" )
+    kind( "StaticLib" )
+    configure_project_base()
+    warnings( "Off" )
+    files {
+      "third_party/zlib/*.c",
+      "third_party/zlib/*.h",
+    }
+
 group( "libswf" )
   project( "libswf" )
   	language( "C" )
   	configure_project_base()
   	files { "src/swf/*.c", "src/swf/*.h" }
     defines { "SWF_BUILD" }
+    includedirs { "third_party/zlib/" }
     -- Options
     filter { "options:librarykind=dynamic" }
       kind( "SharedLib" )
@@ -70,4 +81,4 @@ group( "Samples" )
     kind( "ConsoleApp" )
   	configure_project_base()
     files { "src/samples/%{prj.name:lower()}/*" }
-    links { "libswf" }
+    links { "libswf", "zlib" }
