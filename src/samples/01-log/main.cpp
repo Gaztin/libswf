@@ -10,7 +10,7 @@ int main( int /*argc*/, char* /*argv*/[] )
 	printf( "~~ %s ~~\n", filepath );
 
 	swf_movie movie;
-	if( swf_load( "image.swf", &movie ) < 0 )
+	if( swf_load( filepath, &movie ) < 0 )
 		return -1;
 
 	printf( "Size: %zd\n", movie.size );
