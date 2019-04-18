@@ -196,8 +196,9 @@ static int decompress_zlib( reader* rd )
 
 	do
 	{
+		size_t sizeIn = min( ( rd->end - rd->cur ), sizeof( out ) );
 		strm.next_in  = rd->cur;
-		strm.avail_in = ( uInt )min( ( rd->end - rd->cur ), sizeof( out ) );
+		strm.avail_in = ( uInt )sizeIn;
 		if( strm.avail_in == 0 )
 			break;
 
@@ -229,7 +230,7 @@ static int decompress_zlib( reader* rd )
 					memcpy( newbuf, tmp, ( strm.total_out - have ) );
 				}
 				memcpy( newbuf + ( strm.total_out - have ), out, have );
-				rd->cur += have;
+				rd->cur += ( sizeIn - strm.avail_in );
 			}
 
 		} while( strm.avail_out == 0 );
@@ -339,7 +340,7 @@ static int parse_header( reader* rd, swf_header* outHeader )
 
 		/* ZLib compression */
 		case 'C':
-			decompress_zlib( rd );
+			if( decompress_zlib( rd ) < 0 ) return -1;
 			break;
 
 		/* LZMA compression */
