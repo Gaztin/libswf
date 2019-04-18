@@ -18,13 +18,19 @@
 #ifndef __SWF_H__
 #define __SWF_H__
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef struct
 {
-	size_t size;
+	uint32_t frameWidth;
+	uint32_t frameHeight;
+	uint16_t frameCount;
+	float    frameRate;
+
 } swf_movie;
 
 extern int swf_load( const char* filepath, swf_movie* outMovie );

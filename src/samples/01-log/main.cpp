@@ -13,7 +13,9 @@ int main( int /*argc*/, char* /*argv*/[] )
 	if( swf_load( filepath, &movie ) < 0 )
 		return -1;
 
-	printf( "Size: %zd\n", movie.size );
+	printf( "Frame size:  %d x %d\n", movie.frameWidth, movie.frameHeight );
+	printf( "Frame count: %d\n", movie.frameCount );
+	printf( "Frame rate:  %.2f\n", movie.frameRate );
 
 	getchar();
 	return 0;

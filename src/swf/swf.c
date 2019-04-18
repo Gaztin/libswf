@@ -17,7 +17,7 @@
 
 #include "swf.h"
 
-#include <stdint.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -388,7 +388,10 @@ int swf_load( const char* filepath, swf_movie* outMovie )
 		return -1;
 	}
 
-	outMovie->size = ( rd.end - rd.begin );
+	outMovie->frameWidth  = ( header.frameSize.xMax - header.frameSize.xMin );
+	outMovie->frameHeight = ( header.frameSize.yMax - header.frameSize.yMin );
+	outMovie->frameCount  = header.frameCount;
+	outMovie->frameRate   = ( ( float )header.frameRate.integer + ( ( float )header.frameRate.fractional / USHRT_MAX ) );
 
 	free( rd.begin );
 	return 0;
