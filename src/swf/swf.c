@@ -24,10 +24,6 @@
 
 #include <zlib.h>
 
-#if 1 /* Assume little endian */
-#define LITTLE_ENDIAN 1
-#endif
-
 #ifndef _WIN32
 static errno_t fopen_s( FILE** stream, const char* filename, const char* mode )
 {
@@ -58,12 +54,19 @@ static int flip_bits( void* buf, size_t nbits )
 	return 0;
 }
 
+typedef enum
+{
+	LittleEndian = 0,
+	BigEndian    = 1,
+} byte_order;
+
 typedef struct
 {
-	uint8_t* begin;
-	uint8_t* end;
-	uint8_t* cur;
-	uint8_t  bit;
+	uint8_t*   begin;
+	uint8_t*   end;
+	uint8_t*   cur;
+	uint8_t    bit;
+	byte_order byteOrder;
 } reader;
 
 static uint8_t read_bit( reader* rd )
@@ -80,12 +83,16 @@ static int read_bits( reader* rd, void* dst, size_t nbits )
 		if( rd->cur == rd->end )
 			return -1;
 
-	#ifdef LITTLE_ENDIAN
-		size_t byte = ( rd->cur[ 0 ] >> ( 8 - nbits - rd->bit ) ) & ( ( 1 << nbits ) - 1 );
-		flip_bits( &byte, nbits );
-	#else
-		size_t byte = ( rd->cur[ 0 ] >> rd->bit ) & ( ( 1 << nbits ) - 1 );
-	#endif
+		size_t byte;
+		if( rd->byteOrder == BigEndian )
+		{
+			byte = ( rd->cur[ 0 ] >> ( 8 - nbits - rd->bit ) ) & ( ( 1 << nbits ) - 1 );
+			flip_bits( &byte, nbits );
+		}
+		else
+		{
+			byte = ( rd->cur[ 0 ] >> rd->bit ) & ( ( 1 << nbits ) - 1 );
+		}
 
 		memcpy( dst, &byte, 1 );
 		rd->bit += ( uint8_t )nbits;
@@ -103,12 +110,17 @@ static int read_bits( reader* rd, void* dst, size_t nbits )
 
 		size_t bitsRead = ( 8 - rd->bit );
 
-	#ifdef LITTLE_ENDIAN
-		size_t byte = ( rd->cur[ 0 ] & ( ( 1 << bitsRead ) - 1 ) );
-		flip_bits( &byte, bitsRead );
-	#else
-		size_t byte = ( rd->cur[ 0 ] >> rd->bit ) & ( ( 1 << bitsRead ) - 1 );
-	#endif
+		size_t byte;
+		if( rd->byteOrder == BigEndian )
+		{
+			byte = ( rd->cur[ 0 ] & ( ( 1 << bitsRead ) - 1 ) );
+			flip_bits( &byte, bitsRead );
+		}
+		else
+		{
+			byte = ( rd->cur[ 0 ] >> rd->bit ) & ( ( 1 << bitsRead ) - 1 );
+		}
+
 
 		while( bitsRead < nbits )
 		{
@@ -119,18 +131,16 @@ static int read_bits( reader* rd, void* dst, size_t nbits )
 			size_t have = min( 8, ( nbits - bitsRead ) );
 			size_t b    = rd->cur[ 0 ];
 
-		#ifdef LITTLE_ENDIAN
-			flip_bits( &b, 8 );
-		#endif
+			if( rd->byteOrder == BigEndian )
+				flip_bits( &b, 8 );
 
 			b          &= ( ( 1 << have ) - 1 );
 			byte       |= ( b << bitsRead );
 			bitsRead   += have;
 		}
 
-	#ifdef LITTLE_ENDIAN
-		flip_bits( &byte, bitsRead );
-	#endif
+		if( rd->byteOrder == BigEndian )
+			flip_bits( &byte, bitsRead );
 
 		rd->bit = ( rd->bit + bitsRead ) & 7;
 
@@ -279,6 +289,7 @@ typedef struct
 
 static int parse_rect( reader* rd, swf_rect* outRect )
 {
+	rd->byteOrder ^= 1;
 	memclr( outRect, sizeof( swf_rect ) );
 	if( read_bits( rd, &outRect->nbits, 5 ) < 0 ) return -1;
 	if( read_bits( rd, &outRect->xMin, outRect->nbits ) < 0 ) return -1;
@@ -286,6 +297,7 @@ static int parse_rect( reader* rd, swf_rect* outRect )
 	if( read_bits( rd, &outRect->yMin, outRect->nbits ) < 0 ) return -1;
 	if( read_bits( rd, &outRect->yMax, outRect->nbits ) < 0 ) return -1;
 	reader_byte_align( rd );
+	rd->byteOrder ^= 1;
 
 	return 0;
 }
@@ -302,28 +314,40 @@ typedef struct
 
 static int parse_header( reader* rd, swf_header* outHeader )
 {
+	if( rd->cur + 2 >= rd->end )
+		return -1;
+
 	memclr( outHeader, sizeof( swf_header ) );
+
+	/* Read signature and determine byte order */
+	if( rd->cur[ 1 ] == 'W' && rd->cur[ 2 ] == 'S' )
+		rd->byteOrder = LittleEndian;
+	else if( rd->cur[ 1 ] == 234 && rd->cur[ 2 ] == 202 )
+		rd->byteOrder = BigEndian;
+	else
+		return -1;
+
 	if( read_bytes( rd, &outHeader->signature,  sizeof( outHeader->signature  ) ) < 0 ) return -1;
 	if( read_bytes( rd, &outHeader->version,    sizeof( outHeader->version    ) ) < 0 ) return -1;
 	if( read_bytes( rd, &outHeader->fileLength, sizeof( outHeader->fileLength ) ) < 0 ) return -1;
 
 	switch( outHeader->signature[ 0 ] )
 	{
+		/* No compression */
+		case 'F':
+			break;
+
 		/* ZLib compression */
 		case 'C':
-		{
 			decompress_zlib( rd );
 			break;
-		}
 
 		/* LZMA compression */
 		case 'Z':
-		{
-			break;
-		}
+			return -1; /* Not supported */
 
 		default:
-			break;
+			return -1;
 	}
 
 	if( parse_rect( rd, &outHeader->frameSize ) < 0 ) return -1;
@@ -349,10 +373,11 @@ int swf_load( const char* filepath, swf_movie* outMovie )
 	long size = ftell( f );
 	fseek( f, 0, SEEK_SET );
 	reader rd;
-	rd.begin = ( uint8_t* )malloc( size );
-	rd.end   = rd.begin + size;
-	rd.cur   = rd.begin;
-	rd.bit   = 0;
+	rd.begin     = ( uint8_t* )malloc( size );
+	rd.end       = rd.begin + size;
+	rd.cur       = rd.begin;
+	rd.bit       = 0;
+	rd.byteOrder = BigEndian;
 	fread( rd.begin, 1, size, f );
 	fclose( f );
 
