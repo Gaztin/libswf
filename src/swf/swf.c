@@ -240,6 +240,36 @@ static int decompress_zlib( reader* rd )
 
 typedef struct
 {
+	int8_t  integer;
+	uint8_t fractional;
+} swf_fixed_point_8_8;
+
+static int parse_fixed_point_8_8( reader* rd, swf_fixed_point_8_8* outFixedPoint )
+{
+	memclr( outFixedPoint, sizeof( swf_fixed_point_8_8 ) );
+	if( read_bytes( rd, &outFixedPoint->fractional, sizeof( uint8_t ) ) < 0 ) return -1;
+	if( read_bytes( rd, &outFixedPoint->integer,    sizeof( int8_t  ) ) < 0 ) return -1;
+
+	return 0;
+}
+
+typedef struct
+{
+	int16_t  integer;
+	uint16_t fractional;
+} swf_fixed_point_16_16;
+
+static int parse_fixed_point_16_16( reader* rd, swf_fixed_point_16_16* outFixedPoint )
+{
+	memclr( outFixedPoint, sizeof( swf_fixed_point_16_16 ) );
+	if( read_bytes( rd, &outFixedPoint->fractional, sizeof( uint16_t ) ) < 0 ) return -1;
+	if( read_bytes( rd, &outFixedPoint->integer,    sizeof( int16_t  ) ) < 0 ) return -1;
+
+	return 0;
+}
+
+typedef struct
+{
 	uint8_t  nbits;
 	uint32_t xMin;
 	uint32_t xMax;
@@ -262,12 +292,12 @@ static int parse_rect( reader* rd, swf_rect* outRect )
 
 typedef struct
 {
-	uint8_t  signature[ 3 ];
-	uint8_t  version;
-	uint32_t fileLength;
-	swf_rect frameSize;
-	uint16_t frameRate;
-	uint16_t frameCount;
+	uint8_t             signature[ 3 ];
+	uint8_t             version;
+	uint32_t            fileLength;
+	swf_rect            frameSize;
+	swf_fixed_point_8_8 frameRate;
+	uint16_t            frameCount;
 } swf_header;
 
 static int parse_header( reader* rd, swf_header* outHeader )
@@ -297,7 +327,7 @@ static int parse_header( reader* rd, swf_header* outHeader )
 	}
 
 	if( parse_rect( rd, &outHeader->frameSize ) < 0 ) return -1;
-	if( read_bytes( rd, &outHeader->frameRate,  sizeof( outHeader->frameRate  ) ) < 0 ) return -1;
+	if( parse_fixed_point_8_8( rd, &outHeader->frameRate ) < 0 ) return -1;
 	if( read_bytes( rd, &outHeader->frameCount, sizeof( outHeader->frameCount ) ) < 0 ) return -1;
 
 	return 0;
