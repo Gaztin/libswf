@@ -20,6 +20,8 @@
 
 #include <stdint.h>
 
+#include "swf/color.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -32,6 +34,8 @@ typedef struct
 	float    frameRate;
 
 	uint32_t tagCount;
+
+	swf_rgb  backgroundColor;
 
 } swf_movie;
 

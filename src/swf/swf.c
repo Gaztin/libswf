@@ -278,6 +278,33 @@ static int parse_fixed_point_16_16( reader* rd, swf_fixed_point_16_16* outFixedP
 	return 0;
 }
 
+static int parse_rgb( reader* rd, swf_rgb* outRgb )
+{
+	memclr( outRgb, sizeof( swf_rgb ) );
+	if( read_bytes( rd, &outRgb->r, 1 ) < 0 ) return -1;
+	if( read_bytes( rd, &outRgb->g, 1 ) < 0 ) return -1;
+	if( read_bytes( rd, &outRgb->b, 1 ) < 0 ) return -1;
+	return 0;
+}
+
+static int parse_rgba( reader* rd, swf_rgba* outRgba )
+{
+	memclr( outRgba, sizeof( swf_rgba ) );
+	if( read_bytes( rd, &outRgba->r, 1 ) < 0 ) return -1;
+	if( read_bytes( rd, &outRgba->g, 1 ) < 0 ) return -1;
+	if( read_bytes( rd, &outRgba->b, 1 ) < 0 ) return -1;
+	return 0;
+}
+
+static int parse_argb( reader* rd, swf_argb* outArgb )
+{
+	memclr( outArgb, sizeof( swf_argb ) );
+	if( read_bytes( rd, &outArgb->r, 1 ) < 0 ) return -1;
+	if( read_bytes( rd, &outArgb->g, 1 ) < 0 ) return -1;
+	if( read_bytes( rd, &outArgb->b, 1 ) < 0 ) return -1;
+	return 0;
+}
+
 typedef struct
 {
 	uint8_t  nbits;
@@ -360,6 +387,7 @@ static int parse_header( reader* rd, swf_header* outHeader )
 typedef enum
 {
 	TT_Unknown            = 0,
+	TT_SetBackgroundColor = 9,
 } tag_type;
 
 typedef struct
@@ -368,6 +396,11 @@ typedef struct
 	uint32_t length;
 	uint8_t* data;
 } swf_tag;
+
+typedef struct
+{
+	swf_rgb rgb;
+} tag_data_set_background_color;
 
 static int parse_tag( reader* rd, swf_tag* outTag )
 {
@@ -386,6 +419,12 @@ static int parse_tag( reader* rd, swf_tag* outTag )
 
 	switch( outTag->type )
 	{
+		case TT_SetBackgroundColor:
+		{
+			parse_rgb( rd, &( ( tag_data_set_background_color* )outTag->data )->rgb );
+			break;
+		}
+
 		default: /* Skip unsupported tags */
 			rd->cur += outTag->length;
 			break;
@@ -456,6 +495,13 @@ int swf_load( const char* filepath, swf_movie* outMovie )
 		}
 
 		++outMovie->tagCount;
+
+		switch( tag.type )
+		{
+			case TT_SetBackgroundColor:
+				outMovie->backgroundColor = ( ( tag_data_set_background_color* )tag.data )->rgb;
+				break;
+		}
 
 		free( tag.data );
 	}
