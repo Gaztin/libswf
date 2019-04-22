@@ -441,7 +441,7 @@ int swf_load( const char* filepath, swf_movie* outMovie )
 	memclr( outMovie, sizeof( swf_movie ) );
 
 	FILE* f = NULL;
-	if( fopen_s( &f, filepath, "r" ) !=0 || f == NULL )
+	if( fopen_s( &f, filepath, "r" ) != 0 || f == NULL )
 		return -1;
 
 	/* Read entire file into buffer */
