@@ -87,7 +87,6 @@ static int read_bits( reader* rd, void* dst, size_t nbits )
 		if( rd->byteOrder == BigEndian )
 		{
 			byte = ( rd->cur[ 0 ] >> ( 8 - nbits - rd->bit ) ) & ( ( 1 << nbits ) - 1 );
-			flip_bits( &byte, nbits );
 		}
 		else
 		{
