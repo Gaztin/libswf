@@ -31,6 +31,8 @@ typedef struct
 	uint16_t frameCount;
 	float    frameRate;
 
+	uint32_t tagCount;
+
 } swf_movie;
 
 extern int swf_load( const char* filepath, swf_movie* outMovie );

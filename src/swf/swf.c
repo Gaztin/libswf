@@ -357,6 +357,43 @@ static int parse_header( reader* rd, swf_header* outHeader )
 	return 0;
 }
 
+typedef enum
+{
+	TT_Unknown            = 0,
+} tag_type;
+
+typedef struct
+{
+	tag_type type;
+	uint32_t length;
+	uint8_t* data;
+} swf_tag;
+
+static int parse_tag( reader* rd, swf_tag* outTag )
+{
+	memclr( outTag, sizeof( swf_tag ) );
+	uint16_t tagCodeAndLength = 0;
+	if( read_bytes( rd, &tagCodeAndLength, sizeof( tagCodeAndLength ) ) < 0 ) return -1;
+	outTag->type   = ( tagCodeAndLength & 0xFFC0 ) >> 6;
+	outTag->length = ( tagCodeAndLength & 0x3F );
+	if( outTag->length == 0x3F )
+	{
+		outTag->length = 0;
+		if( read_bytes( rd, &outTag->length, sizeof( outTag->length ) ) < 0 ) return -1;
+	}
+
+	outTag->data = ( uint8_t* )malloc( outTag->length );
+
+	switch( outTag->type )
+	{
+		default: /* Skip unsupported tags */
+			rd->cur += outTag->length;
+			break;
+	}
+
+	return 0;
+}
+
 int swf_load( const char* filepath, swf_movie* outMovie )
 {
 	if( outMovie == NULL )
@@ -392,6 +429,36 @@ int swf_load( const char* filepath, swf_movie* outMovie )
 	outMovie->frameHeight = ( header.frameSize.yMax - header.frameSize.yMin );
 	outMovie->frameCount  = header.frameCount;
 	outMovie->frameRate   = ( ( float )header.frameRate.integer + ( ( float )header.frameRate.fractional / USHRT_MAX ) );
+
+	/* FileAttributes tag is required in SWF 8 and later */
+	if( header.version >= 8 )
+	{
+		swf_tag fileAttributesTag;
+		if( parse_tag( &rd, &fileAttributesTag ) < 0 )
+		{
+			if( fileAttributesTag.data ) free( fileAttributesTag.data );
+			free( rd.begin );
+			return -1;
+		}
+
+		free( fileAttributesTag.data );
+	}
+
+	/* Parse tags until end of file */
+	while( rd.cur < rd.end )
+	{
+		swf_tag tag;
+		if( parse_tag( &rd, &tag ) < 0 )
+		{
+			if( tag.data ) free( tag.data );
+			free( rd.begin );
+			return -1;
+		}
+
+		++outMovie->tagCount;
+
+		free( tag.data );
+	}
 
 	free( rd.begin );
 	return 0;
