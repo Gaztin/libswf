@@ -56,8 +56,8 @@ static int flip_bits( void* buf, size_t nbits )
 
 typedef enum
 {
-	LittleEndian = 0,
-	BigEndian    = 1,
+	BO_LittleEndian = 0,
+	BO_BigEndian    = 1,
 } byte_order;
 
 typedef struct
@@ -84,7 +84,7 @@ static int read_bits( reader* rd, void* dst, size_t nbits )
 			return -1;
 
 		size_t byte;
-		if( rd->byteOrder == BigEndian )
+		if( rd->byteOrder == BO_BigEndian )
 		{
 			byte = ( rd->cur[ 0 ] >> ( 8 - nbits - rd->bit ) ) & ( ( 1 << nbits ) - 1 );
 		}
@@ -110,7 +110,7 @@ static int read_bits( reader* rd, void* dst, size_t nbits )
 		size_t bitsRead = ( 8 - rd->bit );
 
 		size_t byte;
-		if( rd->byteOrder == BigEndian )
+		if( rd->byteOrder == BO_BigEndian )
 		{
 			byte = ( rd->cur[ 0 ] & ( ( 1 << bitsRead ) - 1 ) );
 			flip_bits( &byte, bitsRead );
@@ -130,7 +130,7 @@ static int read_bits( reader* rd, void* dst, size_t nbits )
 			size_t have = min( 8, ( nbits - bitsRead ) );
 			size_t b    = rd->cur[ 0 ];
 
-			if( rd->byteOrder == BigEndian )
+			if( rd->byteOrder == BO_BigEndian )
 				flip_bits( &b, 8 );
 
 			b          &= ( ( 1 << have ) - 1 );
@@ -138,7 +138,7 @@ static int read_bits( reader* rd, void* dst, size_t nbits )
 			bitsRead   += have;
 		}
 
-		if( rd->byteOrder == BigEndian )
+		if( rd->byteOrder == BO_BigEndian )
 			flip_bits( &byte, bitsRead );
 
 		rd->bit = ( rd->bit + bitsRead ) & 7;
@@ -321,9 +321,9 @@ static int parse_header( reader* rd, swf_header* outHeader )
 
 	/* Read signature and determine byte order */
 	if( rd->cur[ 1 ] == 'W' && rd->cur[ 2 ] == 'S' )
-		rd->byteOrder = LittleEndian;
+		rd->byteOrder = BO_LittleEndian;
 	else if( rd->cur[ 1 ] == 234 && rd->cur[ 2 ] == 202 )
-		rd->byteOrder = BigEndian;
+		rd->byteOrder = BO_BigEndian;
 	else
 		return -1;
 
@@ -377,7 +377,7 @@ int swf_load( const char* filepath, swf_movie* outMovie )
 	rd.end       = rd.begin + size;
 	rd.cur       = rd.begin;
 	rd.bit       = 0;
-	rd.byteOrder = BigEndian;
+	rd.byteOrder = BO_BigEndian;
 	fread( rd.begin, 1, size, f );
 	fclose( f );
 
