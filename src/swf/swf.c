@@ -386,7 +386,7 @@ static int parse_header( reader* rd, swf_header* outHeader )
 
 typedef enum
 {
-	TT_Unknown            = 0,
+	TT_End                = 0,
 	TT_SetBackgroundColor = 9,
 } tag_type;
 
