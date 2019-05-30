@@ -5,9 +5,24 @@
 #include <string_view>
 
 #include <swf/swf.h>
+#include <swf/tags.h>
 
 #include <SDL_main.h>
 #include <SDL.h>
+
+static void draw_swf_tag( SDL_Renderer* renderer, swf_tag* tag )
+{
+	switch( swf_get_tag_type( tag ) )
+	{
+		case SWF_TT_SetBackgroundColor:
+		{
+			auto tagData = static_cast< swf_tag_SetBackgroundColor* >( swf_get_tag_data( tag ) );
+			SDL_SetRenderDrawColor( renderer, tagData->r, tagData->g, tagData->b, 0xff );
+
+			break;
+		}
+	}
+}
 
 extern "C" int SDL_main( int /*argc*/, char* /*argv*/[] )
 {
@@ -34,6 +49,20 @@ extern "C" int SDL_main( int /*argc*/, char* /*argv*/[] )
 		return -1;
 	}
 
+	/* Load SWF */
+	swf_movie movie;
+	if( swf_load( "image.swf", &movie ) < 0 )
+	{
+		printf( "swf_load Error\n" );
+		return -1;
+	}
+
+	/* Iterate SWF tags */
+	for( size_t i = 0; i < movie.tagCount; ++i )
+	{
+		draw_swf_tag( renderer, swf_tag_at( &movie, i ) );
+	}
+
 	/* Main loop */
 	bool      quit = false;
 	SDL_Event event;
@@ -49,6 +78,8 @@ extern "C" int SDL_main( int /*argc*/, char* /*argv*/[] )
 		SDL_RenderPresent( renderer );
 	}
 
+	/* Clean up */
+	swf_free( &movie );
 	SDL_DestroyWindow( window );
 	SDL_Quit();
 
