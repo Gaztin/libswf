@@ -15,31 +15,24 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef __SWF_H__
-#define __SWF_H__
+#include "fixed_point.h"
 
-#include <stdint.h>
+#include <memory.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-typedef struct
+int swf_fixed_point_8_8__parse( swf_reader* rd, swf_fixed_point_8_8* outFixedPoint )
 {
-	uint32_t frameWidth;
-	uint32_t frameHeight;
-	uint16_t frameCount;
-	float    frameRate;
+	memset( outFixedPoint, 0, sizeof( swf_fixed_point_8_8 ) );
+	if( swf_reader__read_bytes( rd, &outFixedPoint->fractional, sizeof( uint8_t ) ) < 0 ) return -1;
+	if( swf_reader__read_bytes( rd, &outFixedPoint->integer,    sizeof( int8_t  ) ) < 0 ) return -1;
 
-	uint32_t tagCount;
-
-} swf_movie;
-
-extern int swf_load( const char* filepath, swf_movie* outMovie );
-
-
-#ifdef __cplusplus
+	return 0;
 }
-#endif
 
-#endif
+int swf_fixed_point_16_16__parse( swf_reader* rd, swf_fixed_point_16_16* outFixedPoint )
+{
+	memset( outFixedPoint, 0, sizeof( swf_fixed_point_16_16 ) );
+	if( swf_reader__read_bytes( rd, &outFixedPoint->fractional, sizeof( uint16_t ) ) < 0 ) return -1;
+	if( swf_reader__read_bytes( rd, &outFixedPoint->integer,    sizeof( int16_t  ) ) < 0 ) return -1;
+
+	return 0;
+}

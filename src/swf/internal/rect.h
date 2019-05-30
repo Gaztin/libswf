@@ -15,31 +15,20 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef __SWF_H__
-#define __SWF_H__
+#ifndef __SWF_RECT_H__
+#define __SWF_RECT_H__
 
-#include <stdint.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "internal/reader.h"
 
 typedef struct
 {
-	uint32_t frameWidth;
-	uint32_t frameHeight;
-	uint16_t frameCount;
-	float    frameRate;
+	uint8_t  nbits;
+	uint32_t xMin;
+	uint32_t xMax;
+	uint32_t yMin;
+	uint32_t yMax;
+} swf_rect;
 
-	uint32_t tagCount;
-
-} swf_movie;
-
-extern int swf_load( const char* filepath, swf_movie* outMovie );
-
-
-#ifdef __cplusplus
-}
-#endif
+extern int swf_rect__parse( swf_reader* rd, swf_rect* outRect );
 
 #endif

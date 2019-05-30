@@ -15,42 +15,26 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef __COLOR_H__
-#define __COLOR_H__
+#ifndef __SWF_FIXED_POINT_H__
+#define __SWF_FIXED_POINT_H__
 
 #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+#include "internal/reader.h"
 
 typedef struct
 {
-	uint8_t r;
-	uint8_t g;
-	uint8_t b;
-} swf_rgb;
+	int8_t  integer;
+	uint8_t fractional;
+} swf_fixed_point_8_8;
 
 typedef struct
 {
-	uint8_t r;
-	uint8_t g;
-	uint8_t b;
-	uint8_t a;
-} swf_rgba;
+	int16_t  integer;
+	uint16_t fractional;
+} swf_fixed_point_16_16;
 
-typedef struct
-{
-	uint8_t a;
-	uint8_t r;
-	uint8_t g;
-	uint8_t b;
-} swf_argb;
-
-
-#ifdef __cplusplus
-}
-#endif
+extern int swf_fixed_point_8_8__parse   ( swf_reader* rd, swf_fixed_point_8_8* outFixedPoint );
+extern int swf_fixed_point_16_16__parse ( swf_reader* rd, swf_fixed_point_16_16* outFixedPoint );
 
 #endif

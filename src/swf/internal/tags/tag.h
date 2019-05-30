@@ -15,31 +15,26 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef __SWF_H__
-#define __SWF_H__
+#ifndef __SWF_TAG_H__
+#define __SWF_TAG_H__
 
 #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "internal/reader.h"
+
+typedef enum
+{
+	TT_End            = 0,
+	TT_FileAttributes = 69,
+} swf_tag_type;
 
 typedef struct
 {
-	uint32_t frameWidth;
-	uint32_t frameHeight;
-	uint16_t frameCount;
-	float    frameRate;
+	swf_tag_type type;
+	uint32_t     length;
+	uint8_t*     data;
+} swf_tag;
 
-	uint32_t tagCount;
-
-} swf_movie;
-
-extern int swf_load( const char* filepath, swf_movie* outMovie );
-
-
-#ifdef __cplusplus
-}
-#endif
+int swf_tag__parse( swf_reader* rd, swf_tag* outTag );
 
 #endif

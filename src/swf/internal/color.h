@@ -15,31 +15,38 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef __SWF_H__
-#define __SWF_H__
+#ifndef __SWF_COLOR_H__
+#define __SWF_COLOR_H__
 
 #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "internal/reader.h"
 
 typedef struct
 {
-	uint32_t frameWidth;
-	uint32_t frameHeight;
-	uint16_t frameCount;
-	float    frameRate;
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
+} swf_rgb;
 
-	uint32_t tagCount;
+typedef struct
+{
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
+	uint8_t a;
+} swf_rgba;
 
-} swf_movie;
+typedef struct
+{
+	uint8_t a;
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
+} swf_argb;
 
-extern int swf_load( const char* filepath, swf_movie* outMovie );
-
-
-#ifdef __cplusplus
-}
-#endif
+extern int swf_rgb__parse  ( swf_reader* rd, swf_rgb* outRgb );
+extern int swf_rgba__parse ( swf_reader* rd, swf_rgba* outRgba );
+extern int swf_argb__parse ( swf_reader* rd, swf_argb* outArgb );
 
 #endif

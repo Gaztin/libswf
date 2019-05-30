@@ -67,9 +67,9 @@ group( "libswf" )
   project( "libswf" )
   	language( "C" )
   	configure_project_base()
-  	files { "src/swf/*.c", "src/swf/*.h" }
+  	files { "src/swf/**.c", "src/swf/**.h" }
     defines { "SWF_BUILD" }
-    includedirs { "third_party/zlib/" }
+    includedirs { "src/swf/", "third_party/zlib/" }
     -- Options
     filter { "options:librarykind=dynamic" }
       kind( "SharedLib" )

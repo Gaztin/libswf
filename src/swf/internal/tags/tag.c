@@ -15,31 +15,33 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef __SWF_H__
-#define __SWF_H__
+#include "tag.h"
 
-#include <stdint.h>
+#include <memory.h>
+#include <stdlib.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-typedef struct
+int swf_tag__parse( swf_reader* rd, swf_tag* outTag )
 {
-	uint32_t frameWidth;
-	uint32_t frameHeight;
-	uint16_t frameCount;
-	float    frameRate;
+	memset( outTag, 0, sizeof( swf_tag ) );
+	uint16_t tagCodeAndLength = 0;
+	if( swf_reader__read_bytes( rd, &tagCodeAndLength, sizeof( tagCodeAndLength ) ) < 0 ) return -1;
+	outTag->type   = ( tagCodeAndLength & 0xFFC0 ) >> 6;
+	outTag->length = ( tagCodeAndLength & 0x3F );
+	if( outTag->length == 0x3F )
+	{
+		outTag->length = 0;
+		if( swf_reader__read_bytes( rd, &outTag->length, sizeof( outTag->length ) ) < 0 ) return -1;
+	}
 
-	uint32_t tagCount;
+	outTag->data = malloc( outTag->length );
 
-} swf_movie;
+	/* TODO: Parse meta-data */
+	switch( outTag->type )
+	{
+		default: /* Skip unsupported tags */
+			rd->cur += outTag->length;
+			break;
+	}
 
-extern int swf_load( const char* filepath, swf_movie* outMovie );
-
-
-#ifdef __cplusplus
+	return 0;
 }
-#endif
-
-#endif

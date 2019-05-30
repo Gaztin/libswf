@@ -17,7 +17,6 @@ int main( int /*argc*/, char* /*argv*/[] )
 	printf( "Frame count: %d\n", movie.frameCount );
 	printf( "Frame rate:  %.2f\n", movie.frameRate );
 	printf( "Tag count:   %d\n", movie.tagCount );
-	printf( "Background:  (%d, %d, %d)\n", movie.backgroundColor.r, movie.backgroundColor.g, movie.backgroundColor.b );
 
 	getchar();
 	return 0;

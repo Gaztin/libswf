@@ -15,31 +15,29 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef __SWF_H__
-#define __SWF_H__
+#ifndef __SWF_READER_H__
+#define __SWF_READER_H__
 
 #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+typedef enum
+{
+	BO_LittleEndian = 0,
+	BO_BigEndian    = 1,
+} byte_order;
 
 typedef struct
 {
-	uint32_t frameWidth;
-	uint32_t frameHeight;
-	uint16_t frameCount;
-	float    frameRate;
+	uint8_t*   begin;
+	uint8_t*   end;
+	uint8_t*   cur;
+	uint8_t    bit;
+	byte_order byteOrder;
+} swf_reader;
 
-	uint32_t tagCount;
-
-} swf_movie;
-
-extern int swf_load( const char* filepath, swf_movie* outMovie );
-
-
-#ifdef __cplusplus
-}
-#endif
+extern uint8_t swf_reader__read_bit   ( swf_reader* rd );
+extern int     swf_reader__read_bits  ( swf_reader* rd, void* dst, size_t nbits );
+extern size_t  swf_reader__read_bytes ( swf_reader* rd, void* dst, size_t size );
+extern int     swf_reader__byte_align ( swf_reader* rd );
 
 #endif

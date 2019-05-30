@@ -15,31 +15,25 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef __SWF_H__
-#define __SWF_H__
+#ifndef __SWF_HEADER_H__
+#define __SWF_HEADER_H__
 
 #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "internal/fixed_point.h"
+#include "internal/reader.h"
+#include "internal/rect.h"
 
 typedef struct
 {
-	uint32_t frameWidth;
-	uint32_t frameHeight;
-	uint16_t frameCount;
-	float    frameRate;
+	uint8_t             signature[ 3 ];
+	uint8_t             version;
+	uint32_t            fileLength;
+	swf_rect            frameSize;
+	swf_fixed_point_8_8 frameRate;
+	uint16_t            frameCount;
+} swf_header;
 
-	uint32_t tagCount;
-
-} swf_movie;
-
-extern int swf_load( const char* filepath, swf_movie* outMovie );
-
-
-#ifdef __cplusplus
-}
-#endif
+extern int swf_header__parse( swf_reader* rd, swf_header* outHeader );
 
 #endif
