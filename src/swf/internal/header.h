@@ -21,7 +21,6 @@
 #include <stdint.h>
 
 #include "internal/fixed_point.h"
-#include "internal/reader.h"
 #include "internal/rect.h"
 
 typedef struct
@@ -34,6 +33,6 @@ typedef struct
 	uint16_t            frameCount;
 } swf_header;
 
-extern int swf_header__parse( swf_reader* rd, swf_header* outHeader );
+extern int swf_header__parse( struct swf_reader* rd, swf_header* outHeader );
 
 #endif

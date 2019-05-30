@@ -15,33 +15,27 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "tag.h"
+#ifndef __SWF_TAG_H__
+#define __SWF_TAG_H__
 
-#include <memory.h>
-#include <stdlib.h>
+#include <stdint.h>
 
-int swf_tag__parse( swf_reader* rd, swf_tag* outTag )
+#include "tags.h"
+
+typedef enum
 {
-	memset( outTag, 0, sizeof( swf_tag ) );
-	uint16_t tagCodeAndLength = 0;
-	if( swf_reader__read_bytes( rd, &tagCodeAndLength, sizeof( tagCodeAndLength ) ) < 0 ) return -1;
-	outTag->type   = ( tagCodeAndLength & 0xFFC0 ) >> 6;
-	outTag->length = ( tagCodeAndLength & 0x3F );
-	if( outTag->length == 0x3F )
-	{
-		outTag->length = 0;
-		if( swf_reader__read_bytes( rd, &outTag->length, sizeof( outTag->length ) ) < 0 ) return -1;
-	}
+	TT_End            = 0,
+	TT_FileAttributes = 69,
+} swf_tag_type;
+typedef struct swf_reader swf_reader;
 
-	outTag->data = malloc( outTag->length );
+typedef struct swf_tag
+{
+	swf_tag_type type;
+	uint32_t     length;
+	uint8_t*     data;
+} swf_tag;
 
-	/* TODO: Parse meta-data */
-	switch( outTag->type )
-	{
-		default: /* Skip unsupported tags */
-			rd->cur += outTag->length;
-			break;
-	}
+int swf_tag__parse( swf_reader* rd, swf_tag* outTag );
 
-	return 0;
-}
+#endif

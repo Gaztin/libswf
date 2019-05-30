@@ -19,6 +19,8 @@
 
 #include <memory.h>
 
+#include "internal/reader.h"
+
 int swf_rect__parse( swf_reader* rd, swf_rect* outRect )
 {
 	rd->byteOrder ^= 1;

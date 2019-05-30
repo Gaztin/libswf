@@ -18,7 +18,9 @@
 #ifndef __SWF_RECT_H__
 #define __SWF_RECT_H__
 
-#include "internal/reader.h"
+#include <stdint.h>
+
+typedef struct swf_reader swf_reader;
 
 typedef struct
 {

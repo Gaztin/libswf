@@ -19,6 +19,8 @@
 
 #include <memory.h>
 
+#include "internal/reader.h"
+
 int swf_fixed_point_8_8__parse( swf_reader* rd, swf_fixed_point_8_8* outFixedPoint )
 {
 	memset( outFixedPoint, 0, sizeof( swf_fixed_point_8_8 ) );

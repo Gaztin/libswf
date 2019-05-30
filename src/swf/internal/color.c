@@ -19,6 +19,8 @@
 
 #include <memory.h>
 
+#include "internal/reader.h"
+
 int swf_rgb__parse( swf_reader* rd, swf_rgb* outRgb )
 {
 	memset( outRgb, 0, sizeof( swf_rgb ) );

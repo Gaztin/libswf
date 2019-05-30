@@ -20,13 +20,13 @@
 
 #include <stdint.h>
 
-typedef enum
+typedef enum byte_order
 {
 	BO_LittleEndian = 0,
 	BO_BigEndian    = 1,
 } byte_order;
 
-typedef struct
+typedef struct swf_reader
 {
 	uint8_t*   begin;
 	uint8_t*   end;

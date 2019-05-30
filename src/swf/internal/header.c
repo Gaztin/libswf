@@ -22,6 +22,8 @@
 
 #include <zlib.h>
 
+#include "internal/reader.h"
+
 static int decompress_zlib( swf_reader* rd )
 {
 	z_stream strm;

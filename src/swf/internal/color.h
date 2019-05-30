@@ -20,16 +20,16 @@
 
 #include <stdint.h>
 
-#include "internal/reader.h"
+typedef struct swf_reader swf_reader;
 
-typedef struct
+typedef struct swf_rgb
 {
 	uint8_t r;
 	uint8_t g;
 	uint8_t b;
 } swf_rgb;
 
-typedef struct
+typedef struct swf_rgba
 {
 	uint8_t r;
 	uint8_t g;
@@ -37,7 +37,7 @@ typedef struct
 	uint8_t a;
 } swf_rgba;
 
-typedef struct
+typedef struct swf_argb
 {
 	uint8_t a;
 	uint8_t r;

@@ -20,7 +20,7 @@
 
 #include <stdint.h>
 
-#include "internal/reader.h"
+typedef struct swf_reader swf_reader;
 
 typedef struct
 {
