@@ -62,6 +62,45 @@ group( "ThirdParty" )
       "third_party/zlib/*.c",
       "third_party/zlib/*.h",
     }
+  project( "SDL" )
+    kind( "StaticLib" )
+    configure_project_base()
+    warnings( "Off" )
+    staticruntime( "On" )
+    includedirs { "third_party/SDL/include/" }
+    files {
+      "third_party/SDL/src/*.c",
+      "third_party/SDL/src/*/*.c",
+      "third_party/SDL/src/*/dummy/*.c",
+      "third_party/SDL/src/render/software/*.c",
+    }
+    removefiles {
+      "third_party/SDL/src/main/dummy/SDL_dummy_main.c",
+    }
+    -- Windows settings
+    filter { "system:windows" }
+      files {
+        "third_party/SDL/src/*/windows/*.c",
+        "third_party/SDL/src/audio/directsound/*.c",
+        "third_party/SDL/src/audio/disk/*.c",
+        "third_party/SDL/src/audio/wasapi/*.c",
+        "third_party/SDL/src/audio/winmm/*.c",
+        "third_party/SDL/src/joystick/hidapi/*.c",
+        "third_party/SDL/src/render/direct3d/*.c",
+        "third_party/SDL/src/render/direct3d11/*.c",
+        "third_party/SDL/src/render/opengl/*.c",
+        "third_party/SDL/src/render/opengles2/*.c",
+        "third_party/SDL/src/thread/generic/SDL_syscond.c",
+        "third_party/SDL/src/video/yuv2rgb/*.c",
+      }
+    -- Linux settings
+    filter { "system:linux" }
+      files {
+        "third_party/SDL/src/*/unix/*.c",
+        "third_party/SDL/src/*/linux/*.c",
+        "third_party/SDL/src/render/opengl/*.c",
+        "third_party/SDL/src/thread/pthread/*.c",
+      }
 
 group( "libswf" )
   project( "libswf" )
@@ -80,5 +119,15 @@ group( "Samples" )
   project( "01-Log" )
     kind( "ConsoleApp" )
   	configure_project_base()
-    files { "src/samples/%{prj.name:lower()}/*" }
+    files { "src/samples/%{prj.name:lower()}/**" }
     links { "libswf", "zlib" }
+
+  project( "02-SDL" )
+    kind( "WindowedApp" )
+    configure_project_base()
+    files { "src/samples/%{prj.name:lower()}/**" }
+    includedirs { "third_party/SDL/include/" }
+    links { "libswf", "zlib", "SDL" }
+    -- Windows settings
+    filter { "system:windows" }
+      links { "Winmm", "version", "Imm32", "Setupapi" }
