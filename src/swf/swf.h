@@ -24,6 +24,8 @@
 extern "C" {
 #endif
 
+typedef struct swf_tag swf_tag;
+
 typedef struct
 {
 	uint32_t frameWidth;
@@ -32,11 +34,13 @@ typedef struct
 	float    frameRate;
 
 	uint32_t tagCount;
+	swf_tag* tags;
 
 } swf_movie;
 
-extern int swf_load( const char* filepath, swf_movie* outMovie );
-
+extern int      swf_load   ( const char* filepath, swf_movie* outMovie );
+extern swf_tag* swf_tag_at ( swf_movie* movie, size_t index );
+extern void     swf_free   ( swf_movie* movie );
 
 #ifdef __cplusplus
 }

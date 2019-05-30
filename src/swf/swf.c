@@ -22,10 +22,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "internal/tags/tag.h"
+#include "internal/tag.h"
 #include "internal/color.h"
 #include "internal/fixed_point.h"
 #include "internal/header.h"
+#include "internal/reader.h"
 #include "internal/rect.h"
 
 #ifndef _WIN32
@@ -73,42 +74,62 @@ int swf_load( const char* filepath, swf_movie* outMovie )
 	outMovie->frameCount  = header.frameCount;
 	outMovie->frameRate   = ( ( float )header.frameRate.integer + ( ( float )header.frameRate.fractional / USHRT_MAX ) );
 
-	/* FileAttributes tag is required in SWF 8 and later */
-	if( header.version >= 8 )
-	{
-		swf_tag fileAttributesTag;
-		if( swf_tag__parse( &rd, &fileAttributesTag ) < 0 )
-		{
-			if( fileAttributesTag.data ) free( fileAttributesTag.data );
-			free( rd.begin );
-			return -1;
-		}
-
-		free( fileAttributesTag.data );
-
-		if( fileAttributesTag.type != TT_FileAttributes )
-		{
-			free( rd.begin );
-			return -1;
-		}
-	}
-
 	/* Parse tags until end of file */
 	while( rd.cur < rd.end )
 	{
 		swf_tag tag;
 		if( swf_tag__parse( &rd, &tag ) < 0 )
 		{
-			if( tag.data ) free( tag.data );
+			swf_free( outMovie );
 			free( rd.begin );
 			return -1;
 		}
 
+		/* Reallocate tags array and push the new tag into it */
 		++outMovie->tagCount;
+		outMovie->tags = realloc( outMovie->tags, ( sizeof( swf_tag ) * outMovie->tagCount ) );
+		memcpy( &outMovie->tags[ outMovie->tagCount - 1 ], &tag, sizeof( swf_tag ) );
+	}
 
-		free( tag.data );
+	/* FileAttributes tag must be the first in SWF 8 and later */
+	if( header.version >= 8 )
+	{
+		if( outMovie->tagCount == 0 || outMovie->tags[ 0 ].type != SWF_TT_FileAttributes )
+		{
+			swf_free( outMovie );
+			free( rd.begin );
+			return -1;
+		}
 	}
 
 	free( rd.begin );
 	return 0;
+}
+
+swf_tag* swf_tag_at( swf_movie* movie, size_t index )
+{
+	if( index < movie->tagCount )
+		return &movie->tags[ index ];
+
+	return NULL;
+}
+
+void swf_free( swf_movie* movie )
+{
+	if( movie->tags )
+	{
+		/* Clean up tag data */
+		for( size_t i = 0; i < movie->tagCount; ++i )
+		{
+			swf_tag* tag = &movie->tags[ i ];
+			if( tag->data )
+				free( tag->data );
+			tag->data = NULL;
+		}
+
+		/* Deallocate tags buffer */
+		free( movie->tags );
+		movie->tags     = NULL;
+		movie->tagCount = 0;
+	}
 }

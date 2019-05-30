@@ -15,22 +15,16 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef __SWF_TAG_H__
-#define __SWF_TAG_H__
-
-#include <stdint.h>
-
 #include "tags.h"
 
-typedef struct swf_reader swf_reader;
+#include "internal/tag.h"
 
-typedef struct swf_tag
+swf_tag_type swf_get_tag_type( swf_tag* tag )
 {
-	swf_tag_type type;
-	uint32_t     length;
-	uint8_t*     data;
-} swf_tag;
+	return tag->type;
+}
 
-int swf_tag__parse( swf_reader* rd, swf_tag* outTag );
-
-#endif
+void* swf_get_tag_data( swf_tag* tag )
+{
+	return tag->data;
+}

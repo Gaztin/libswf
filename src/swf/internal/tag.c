@@ -20,7 +20,9 @@
 #include <memory.h>
 #include <stdlib.h>
 
+#include "internal/color.h"
 #include "internal/reader.h"
+#include "tags.h"
 
 int swf_tag__parse( swf_reader* rd, swf_tag* outTag )
 {
@@ -40,6 +42,16 @@ int swf_tag__parse( swf_reader* rd, swf_tag* outTag )
 	/* TODO: Parse meta-data */
 	switch( outTag->type )
 	{
+		case SWF_TT_SetBackgroundColor:
+		{
+			swf_rgb rgb;
+			swf_rgb__parse( rd, &rgb );
+			( ( swf_tag_SetBackgroundColor* )outTag->data )->r = rgb.r;
+			( ( swf_tag_SetBackgroundColor* )outTag->data )->g = rgb.g;
+			( ( swf_tag_SetBackgroundColor* )outTag->data )->b = rgb.b;
+			break;
+		}
+
 		default: /* Skip unsupported tags */
 			rd->cur += outTag->length;
 			break;

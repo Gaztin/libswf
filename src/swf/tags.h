@@ -15,22 +15,36 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef __SWF_TAG_H__
-#define __SWF_TAG_H__
+#ifndef __SWF_TAGS_H__
+#define __SWF_TAGS_H__
 
 #include <stdint.h>
 
-#include "tags.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-typedef struct swf_reader swf_reader;
+typedef struct swf_tag swf_tag;
 
-typedef struct swf_tag
+typedef enum swf_tag_type
 {
-	swf_tag_type type;
-	uint32_t     length;
-	uint8_t*     data;
-} swf_tag;
+	SWF_TT_End                =  0,
+	SWF_TT_SetBackgroundColor =  9,
+	SWF_TT_FileAttributes     = 69,
+} swf_tag_type;
 
-int swf_tag__parse( swf_reader* rd, swf_tag* outTag );
+typedef struct swf_tag_SetBackgroundColor
+{
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
+} swf_tag_SetBackgroundColor;
+
+extern swf_tag_type swf_get_tag_type( swf_tag* tag );
+extern void*        swf_get_tag_data( swf_tag* tag );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
