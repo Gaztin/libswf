@@ -219,13 +219,13 @@ static int decompress_zlib( reader* rd )
 				have = ( sizeof( out ) - strm.avail_out );
 				if( newbuf == NULL || have == strm.total_out )
 				{
-					newbuf = ( uint8_t* )realloc( newbuf, strm.total_out );
+					newbuf = realloc( newbuf, strm.total_out );
 				}
 				else
 				{
-					tmp    = ( uint8_t* )realloc( tmp, ( strm.total_out - have ) );
+					tmp    = realloc( tmp, ( strm.total_out - have ) );
 					memcpy( tmp, newbuf, ( strm.total_out - have ) );
-					newbuf = ( uint8_t* )realloc( newbuf, ( strm.total_out - have ) );
+					newbuf = realloc( newbuf, ( strm.total_out - have ) );
 					memcpy( newbuf, tmp, ( strm.total_out - have ) );
 				}
 				memcpy( newbuf + ( strm.total_out - have ), out, have );
@@ -415,7 +415,7 @@ static int parse_tag( reader* rd, swf_tag* outTag )
 		if( read_bytes( rd, &outTag->length, sizeof( outTag->length ) ) < 0 ) return -1;
 	}
 
-	outTag->data = ( uint8_t* )malloc( outTag->length );
+	outTag->data = malloc( outTag->length );
 
 	switch( outTag->type )
 	{
@@ -449,7 +449,7 @@ int swf_load( const char* filepath, swf_movie* outMovie )
 	long size = ftell( f );
 	fseek( f, 0, SEEK_SET );
 	reader rd;
-	rd.begin     = ( uint8_t* )malloc( size );
+	rd.begin     = malloc( size );
 	rd.end       = rd.begin + size;
 	rd.cur       = rd.begin;
 	rd.bit       = 0;
