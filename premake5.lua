@@ -130,4 +130,5 @@ group( "Samples" )
     links { "libswf", "zlib", "SDL" }
     -- Windows settings
     filter { "system:windows" }
+      linkoptions { "/NODEFAULTLIB:library" }
       links { "Winmm", "version", "Imm32", "Setupapi" }
