@@ -57,7 +57,11 @@ extern "C" int SDL_main( int /*argc*/, char* /*argv*/[] )
 		return -1;
 	}
 
-	/* Iterate SWF tags */
+	/* Window settings */
+	SDL_SetWindowSize( window, movie.frameWidth / 20, movie.frameHeight / 20 );
+	SDL_SetWindowResizable( window, SDL_FALSE );
+
+	/* Draw SWF tags */
 	for( size_t i = 0; i < movie.tagCount; ++i )
 	{
 		draw_swf_tag( renderer, swf_tag_at( &movie, i ) );
