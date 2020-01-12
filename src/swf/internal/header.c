@@ -26,66 +26,39 @@
 
 static int decompress_zlib( swf_reader* rd )
 {
-	z_stream strm;
-	int32_t  ret;
-	uint32_t have;
-	uint8_t  out[ 128 * 1024 ]; /* 128kB */
 	uint8_t* newbuf = NULL;
-	uint8_t* tmp    = NULL;
 
 	/* Initialize inflation */
-	strm.zalloc = Z_NULL;
-	strm.zfree = Z_NULL;
-	strm.opaque = Z_NULL;
+	z_stream strm;
+	strm.zalloc   = Z_NULL;
+	strm.zfree    = Z_NULL;
+	strm.opaque   = Z_NULL;
 	strm.avail_in = 0;
-	strm.next_in = Z_NULL;
-	if( ( ret = inflateInit( &strm ) ) != Z_OK )
+	strm.next_in  = rd->cur;
+
+	if( inflateInit( &strm ) != Z_OK )
 		return -1;
 
-	do
+	strm.avail_in = ( uInt )( rd->end - rd->cur );
+	strm.next_in  = rd->cur;
+
+	for( ;; )
 	{
-		size_t sizeIn = min( ( rd->end - rd->cur ), sizeof( out ) );
-		strm.next_in  = rd->cur;
-		strm.avail_in = ( uInt )sizeIn;
-		if( strm.avail_in == 0 )
+		uint8_t buffer[ 16 ];
+		strm.next_out  = &buffer[ 0 ];
+		strm.avail_out = sizeof( buffer );
+
+		if( inflate( &strm, Z_NO_FLUSH ) != Z_OK )
 			break;
 
-		do
-		{
-			strm.next_out  = out;
-			strm.avail_out = sizeof( out );
+		uint32_t buflen = ( sizeof( buffer ) - strm.avail_out );
 
-			ret = inflate( &strm, Z_NO_FLUSH );
-			if( ret < 0 )
-			{
-				inflateEnd( &strm );
-				if( newbuf ) free( newbuf );
-				if( tmp    ) free( tmp    );
-				return -1;
-			}
-			if( ret == Z_OK )
-			{
-				have = ( sizeof( out ) - strm.avail_out );
-				if( newbuf == NULL || have == strm.total_out )
-				{
-					newbuf = realloc( newbuf, strm.total_out );
-				}
-				else
-				{
-					tmp    = realloc( tmp, ( strm.total_out - have ) );
-					memcpy( tmp, newbuf, ( strm.total_out - have ) );
-					newbuf = realloc( newbuf, ( strm.total_out - have ) );
-					memcpy( newbuf, tmp, ( strm.total_out - have ) );
-				}
-				memcpy( newbuf + ( strm.total_out - have ), out, have );
-				rd->cur += ( sizeIn - strm.avail_in );
-			}
+		newbuf = realloc( newbuf, strm.total_out );
+		memcpy( newbuf + ( strm.total_out - buflen ), buffer, buflen );
+	}
 
-		} while( strm.avail_out == 0 );
-
-	} while( ret != Z_STREAM_END );
-	
-	inflateEnd( &strm );
+	if( inflateEnd( &strm ) != Z_OK )
+		return -1;
 
 	/* Swap buffer data */
 	free( rd->begin );
