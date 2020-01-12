@@ -21,6 +21,7 @@
 #include "internal/reader.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 int swf_gradient_record__parse( swf_reader* rd, swf_shape_version shapeVersion, swf_gradient_record* outGradientRecord )
 {
@@ -61,30 +62,25 @@ int swf_gradient_record__parse( swf_reader* rd, swf_shape_version shapeVersion, 
 
 int swf_gradient__parse( swf_reader* rd, swf_shape_version shapeVersion, swf_gradient* outGradient )
 {
-	uint8_t spreadMode[ 2 ];
-	if( swf_reader__read_bytes( rd, spreadMode, 2 ) < 0 )
+	memset( outGradient, 0, sizeof( swf_gradient ) );
+
+	if( swf_reader__read_bits( rd, &outGradient->spreadMode, 2 ) < 0 )
 		return -1;
 
-	uint8_t interpolationMode[ 2 ];
-	if( swf_reader__read_bytes( rd, interpolationMode, 2 ) < 0 )
+	if( swf_reader__read_bits( rd, &outGradient->interpolationMode, 2 ) < 0 )
 		return -1;
 
-	uint8_t numGradients[ 4 ];
-	if( swf_reader__read_bytes( rd, numGradients, 4 ) < 0 )
+	if( swf_reader__read_bits( rd, &outGradient->recordCount, 4 ) < 0 )
 		return -1;
 
-	swf_gradient_record* records = malloc( numGradients[ 0 ] * sizeof( swf_gradient_record ) );
+	outGradient->records = malloc( outGradient->recordCount * sizeof( swf_gradient_record ) );
 
-	for( size_t i = 0; i < numGradients[ 0 ]; ++i )
+	for( size_t i = 0; i < outGradient->recordCount; ++i )
 	{
-		if( swf_gradient_record__parse( rd, shapeVersion, &records[ i ] ) < 0 )
+		if( swf_gradient_record__parse( rd, shapeVersion, &outGradient->records[ i ] ) < 0 )
 			return -1;
 	}
 
-	outGradient->spreadMode        = ( swf_gradient_spread_mode )spreadMode[ 0 ];
-	outGradient->interpolationMode = ( swf_gradient_interpolation_mode )interpolationMode[ 0 ];
-	outGradient->recordCount       = numGradients[ 0 ];
-	outGradient->records           = records;
 	return 0;
 }
 

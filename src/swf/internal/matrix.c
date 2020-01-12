@@ -26,14 +26,14 @@ int swf_matrix__parse( swf_reader* rd, swf_matrix* outMatrix )
 {
 	outMatrix = outMatrix;
 
-	uint8_t hasScale;
-	if( swf_reader__read_bytes( rd, &hasScale, sizeof( hasScale ) ) < 0 )
+	uint8_t hasScale = 0;
+	if( swf_reader__read_bits( rd, &hasScale, 1 ) < 0 )
 		return -1;
 
 	if( hasScale == 1 )
 	{
-		uint8_t nScaleBits[ 5 ];
-		if( swf_reader__read_bytes( rd, nScaleBits, sizeof( nScaleBits ) ) < 0 )
+		uint8_t nScaleBits = 0;
+		if( swf_reader__read_bits( rd, &nScaleBits, 5 ) < 0 )
 			return -1;
 
 	}

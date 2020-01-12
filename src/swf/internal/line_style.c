@@ -65,43 +65,43 @@ int swf_line_style2__parse( swf_reader* rd, swf_line_style* outLineStyle )
 	if( swf_reader__read_bytes( rd, &outLineStyle->width, 2 ) < 0 )
 		return -1;
 
-	uint8_t startCapStyle[ 2 ];
-	if( swf_reader__read_bytes( rd, startCapStyle, 2 ) < 0 )
+	uint8_t startCapStyle = 0;
+	if( swf_reader__read_bits( rd, &startCapStyle, 2 ) < 0 )
 		return -1;
 
-	uint8_t joinStyle[ 2 ];
-	if( swf_reader__read_bytes( rd, joinStyle, 2 ) < 0 )
+	uint8_t joinStyle = 0;
+	if( swf_reader__read_bits( rd, &joinStyle, 2 ) < 0 )
 		return -1;
 
-	uint8_t hasFillFlag;
-	if( swf_reader__read_bytes( rd, &hasFillFlag, 1 ) < 0 )
+	uint8_t hasFillFlag = 0;
+	if( swf_reader__read_bits( rd, &hasFillFlag, 1 ) < 0 )
 		return -1;
 
-	uint8_t noHScaleFlag;
-	if( swf_reader__read_bytes( rd, &noHScaleFlag, 1 ) < 0 )
+	uint8_t noHScaleFlag = 0;
+	if( swf_reader__read_bits( rd, &noHScaleFlag, 1 ) < 0 )
 		return -1;
 
-	uint8_t noVScaleFlag;
-	if( swf_reader__read_bytes( rd, &noVScaleFlag, 1 ) < 0 )
+	uint8_t noVScaleFlag = 0;
+	if( swf_reader__read_bits( rd, &noVScaleFlag, 1 ) < 0 )
 		return -1;
 
-	uint8_t pixelHintingFlag;
-	if( swf_reader__read_bytes( rd, &pixelHintingFlag, 1 ) < 0 )
+	uint8_t pixelHintingFlag = 0;
+	if( swf_reader__read_bits( rd, &pixelHintingFlag, 1 ) < 0 )
 		return -1;
 
-	uint8_t reserved[ 5 ];
-	if( swf_reader__read_bytes( rd, reserved, 5 ) < 0 )
+	uint8_t reserved = 0;
+	if( swf_reader__read_bits( rd, &reserved, 5 ) < 0 )
 		return -1;
 
-	uint8_t noClose;
-	if( swf_reader__read_bytes( rd, &noClose, 1 ) < 0 )
+	uint8_t noClose = 0;
+	if( swf_reader__read_bits( rd, &noClose, 1 ) < 0 )
 		return -1;
 
-	uint8_t endCapStyle[ 2 ];
-	if( swf_reader__read_bytes( rd, endCapStyle, 2 ) < 0 )
+	uint8_t endCapStyle = 0;
+	if( swf_reader__read_bits( rd, &endCapStyle, 2 ) < 0 )
 		return -1;
 
-	if( joinStyle[ 0 ] == 2 )
+	if( joinStyle == 2 )
 	{
 		uint16_t miterLimitFactor;
 		if( swf_reader__read_bytes( rd, &miterLimitFactor, 2 ) < 0 )
