@@ -75,7 +75,7 @@ int swf_fill_style__parse( swf_reader* rd, swf_shape_version shapeVersion, swf_f
 			if( swf_matrix__parse( rd, &outFillStyle->metaData.gradients.gradientMatrix ) < 0 )
 				return -1;
 
-			if( swf_gradient__parse( rd, &outFillStyle->metaData.gradients.gradient ) < 0 )
+			if( swf_gradient__parse( rd, shapeVersion, &outFillStyle->metaData.gradients.subType.gradient ) < 0 )
 				return -1;
 
 		} break;
@@ -85,7 +85,7 @@ int swf_fill_style__parse( swf_reader* rd, swf_shape_version shapeVersion, swf_f
 			if( swf_matrix__parse( rd, &outFillStyle->metaData.gradients.gradientMatrix ) < 0 )
 				return -1;
 
-			if( swf_focal_gradient__parse( rd, &outFillStyle->metaData.gradients.focalGradient ) < 0 )
+			if( swf_focal_gradient__parse( rd, shapeVersion, &outFillStyle->metaData.gradients.subType.focalGradient ) < 0 )
 				return -1;
 
 		} break;

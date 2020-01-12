@@ -48,11 +48,12 @@ typedef struct swf_fill_style
 		{
 			swf_matrix gradientMatrix;
 
-			union
+			union 
 			{
 				swf_gradient       gradient;
 				swf_focal_gradient focalGradient;
-			};
+
+			} subType;
 
 		} gradients;
 
