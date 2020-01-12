@@ -135,9 +135,14 @@ int swf_header__parse( swf_reader* rd, swf_header* outHeader )
 			return -1;
 	}
 
-	if( swf_rect__parse( rd, &outHeader->frameSize ) < 0 ) return -1;
-	if( swf_fixed_point_8_8__parse( rd, &outHeader->frameRate ) < 0 ) return -1;
-	if( swf_reader__read_bytes( rd, &outHeader->frameCount, sizeof( outHeader->frameCount ) ) < 0 ) return -1;
+	if( swf_rect__parse( rd, &outHeader->frameSize ) < 0 )
+		return -1;
+
+	if( swf_fixed_point__parse( rd, 8, &outHeader->frameRate ) < 0 )
+		return -1;
+
+	if( swf_reader__read_bytes( rd, &outHeader->frameCount, sizeof( outHeader->frameCount ) ) < 0 )
+		return -1;
 
 	return 0;
 }

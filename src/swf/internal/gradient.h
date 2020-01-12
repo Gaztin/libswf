@@ -59,8 +59,8 @@ typedef struct swf_gradient
 
 typedef struct swf_focal_gradient
 {
-	swf_gradient        super;
-	swf_fixed_point_8_8 focalPoint;
+	swf_gradient    super;
+	swf_fixed_point focalPoint;
 	
 } swf_focal_gradient;
 

@@ -25,12 +25,12 @@
 
 typedef struct
 {
-	uint8_t             signature[ 3 ];
-	uint8_t             version;
-	uint32_t            fileLength;
-	swf_rect            frameSize;
-	swf_fixed_point_8_8 frameRate;
-	uint16_t            frameCount;
+	uint8_t         signature[ 3 ];
+	uint8_t         version;
+	uint32_t        fileLength;
+	swf_rect        frameSize;
+	swf_fixed_point frameRate;
+	uint16_t        frameCount;
 } swf_header;
 
 extern int swf_header__parse( struct swf_reader* rd, swf_header* outHeader );

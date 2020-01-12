@@ -22,19 +22,13 @@
 
 typedef struct swf_reader swf_reader;
 
-typedef struct
-{
-	int8_t  integer;
-	uint8_t fractional;
-} swf_fixed_point_8_8;
-
-typedef struct
+typedef struct swf_fixed_point
 {
 	int16_t  integer;
 	uint16_t fractional;
-} swf_fixed_point_16_16;
 
-extern int swf_fixed_point_8_8__parse   ( swf_reader* rd, swf_fixed_point_8_8* outFixedPoint );
-extern int swf_fixed_point_16_16__parse ( swf_reader* rd, swf_fixed_point_16_16* outFixedPoint );
+} swf_fixed_point;
+
+extern int swf_fixed_point__parse( swf_reader* rd, uint8_t nbits, swf_fixed_point* outFixedPoint );
 
 #endif
