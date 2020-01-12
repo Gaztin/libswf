@@ -18,6 +18,7 @@ static void draw_swf_tag( SDL_Renderer* renderer, swf_tag* tag )
 		{
 			auto tagData = static_cast< swf_tag_SetBackgroundColor* >( swf_get_tag_data( tag ) );
 			SDL_SetRenderDrawColor( renderer, tagData->r, tagData->g, tagData->b, 0xff );
+			SDL_RenderClear( renderer );
 
 			break;
 		}
@@ -78,7 +79,6 @@ extern "C" int SDL_main( int /*argc*/, char* /*argv*/[] )
 				quit = true;
 		}
 
-		SDL_RenderClear( renderer );
 		SDL_RenderPresent( renderer );
 	}
 
