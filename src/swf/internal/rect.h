@@ -24,11 +24,10 @@ typedef struct swf_reader swf_reader;
 
 typedef struct
 {
-	uint8_t  nbits;
-	uint32_t xMin;
-	uint32_t xMax;
-	uint32_t yMin;
-	uint32_t yMax;
+	int32_t xMin;
+	int32_t xMax;
+	int32_t yMin;
+	int32_t yMax;
 } swf_rect;
 
 extern int swf_rect__parse( swf_reader* rd, swf_rect* outRect );
