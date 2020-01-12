@@ -77,6 +77,8 @@ int swf_matrix__parse( swf_reader* rd, swf_matrix* outMatrix )
 	if( swf_reader__read_bits( rd, &translateY, translateBits ) < 0 )
 		return -1;
 
+	swf_reader__byte_align( rd );
+
 	/* TODO: Calculate matrix elements */
 
 	return 0;
