@@ -24,26 +24,53 @@
 int swf_rgb__parse( swf_reader* rd, swf_rgb* outRgb )
 {
 	memset( outRgb, 0, sizeof( swf_rgb ) );
-	if( swf_reader__read_bytes( rd, &outRgb->r, 1 ) < 0 ) return -1;
-	if( swf_reader__read_bytes( rd, &outRgb->g, 1 ) < 0 ) return -1;
-	if( swf_reader__read_bytes( rd, &outRgb->b, 1 ) < 0 ) return -1;
+
+	if( swf_reader__read_bytes( rd, &outRgb->r, 1 ) < 0 )
+		return -1;
+
+	if( swf_reader__read_bytes( rd, &outRgb->g, 1 ) < 0 )
+		return -1;
+
+	if( swf_reader__read_bytes( rd, &outRgb->b, 1 ) < 0 )
+		return -1;
+
 	return 0;
 }
 
 int swf_rgba__parse( swf_reader* rd, swf_rgba* outRgba )
 {
 	memset( outRgba, 0, sizeof( swf_rgba ) );
-	if( swf_reader__read_bytes( rd, &outRgba->r, 1 ) < 0 ) return -1;
-	if( swf_reader__read_bytes( rd, &outRgba->g, 1 ) < 0 ) return -1;
-	if( swf_reader__read_bytes( rd, &outRgba->b, 1 ) < 0 ) return -1;
+
+	if( swf_reader__read_bytes( rd, &outRgba->r, 1 ) < 0 )
+		return -1;
+
+	if( swf_reader__read_bytes( rd, &outRgba->g, 1 ) < 0 )
+		return -1;
+
+	if( swf_reader__read_bytes( rd, &outRgba->b, 1 ) < 0 )
+		return -1;
+
+	if( swf_reader__read_bytes( rd, &outRgba->a, 1 ) < 0 )
+		return -1;
+
 	return 0;
 }
 
 int swf_argb__parse( swf_reader* rd, swf_argb* outArgb )
 {
 	memset( outArgb, 0, sizeof( swf_argb ) );
-	if( swf_reader__read_bytes( rd, &outArgb->r, 1 ) < 0 ) return -1;
-	if( swf_reader__read_bytes( rd, &outArgb->g, 1 ) < 0 ) return -1;
-	if( swf_reader__read_bytes( rd, &outArgb->b, 1 ) < 0 ) return -1;
+
+	if( swf_reader__read_bytes( rd, &outArgb->a, 1 ) < 0 )
+		return -1;
+
+	if( swf_reader__read_bytes( rd, &outArgb->r, 1 ) < 0 )
+		return -1;
+
+	if( swf_reader__read_bytes( rd, &outArgb->g, 1 ) < 0 )
+		return -1;
+
+	if( swf_reader__read_bytes( rd, &outArgb->b, 1 ) < 0 )
+		return -1;
+
 	return 0;
 }
