@@ -39,7 +39,7 @@ typedef struct swf_line_style_array
 } swf_line_style_array;
 
 extern int  swf_line_style__parse        ( swf_reader* rd, swf_shape_version shapeVersion, swf_line_style* outLineStyle );
-extern int  swf_line_style2__parse       ( swf_reader* rd, swf_line_style* outLineStyle );
+extern int  swf_line_style2__parse       ( swf_reader* rd, swf_shape_version shapeVersion, swf_line_style* outLineStyle );
 extern int  swf_line_style_array__parse  ( swf_reader* rd, swf_shape_version shapeVersion, swf_line_style_array* outLineStyleArray );
 extern void swf_line_style_array__destroy( swf_line_style_array* lineStyleArray );
 

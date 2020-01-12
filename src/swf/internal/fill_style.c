@@ -38,7 +38,7 @@ int swf_fill_style__parse( swf_reader* rd, swf_shape_version shapeVersion, swf_f
 			case SWF_SHAPE2:
 			{
 				swf_rgb rgb;
-				if( swf_rgba__parse( rd, &rgb ) < 0 )
+				if( swf_rgb__parse( rd, &rgb ) < 0 )
 					return -1;
 
 				outFillStyle->color = 0xFF000000 | ( uint32_t )rgb.b << 16 | ( uint32_t )rgb.g << 8 | ( uint32_t )rgb.r;
@@ -112,21 +112,15 @@ int swf_fill_style__parse( swf_reader* rd, swf_shape_version shapeVersion, swf_f
 
 int swf_fill_style_array__parse( swf_reader* rd, swf_shape_version shapeVersion, swf_fill_style_array* outFillStyleArray )
 {
-	uint8_t fillStyleCount;
-	if( swf_reader__read_bytes( rd, &fillStyleCount, 1 ) < 0 )
+	memset( outFillStyleArray, 0, sizeof( swf_fill_style_array ) );
+
+	if( swf_reader__read_bytes( rd, &outFillStyleArray->styleCount, 1 ) < 0 )
 		return -1;
 
-	if( fillStyleCount == 0xFF )
+	if( outFillStyleArray->styleCount == 0xFF )
 	{
-		uint16_t fillStyleCountExtended;
-		if( swf_reader__read_bytes( rd, &fillStyleCountExtended, 2 ) < 0 )
+		if( swf_reader__read_bytes( rd, &outFillStyleArray->styleCount, 2 ) < 0 )
 			return -1;
-
-		outFillStyleArray->styleCount = fillStyleCountExtended;
-	}
-	else
-	{
-		outFillStyleArray->styleCount = ( uint16_t )fillStyleCount;
 	}
 
 	outFillStyleArray->styles = malloc( outFillStyleArray->styleCount * sizeof( swf_fill_style ) );

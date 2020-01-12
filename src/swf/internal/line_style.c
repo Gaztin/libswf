@@ -63,7 +63,7 @@ int swf_line_style__parse( swf_reader* rd, swf_shape_version shapeVersion, swf_l
 	return 0;
 }
 
-int swf_line_style2__parse( swf_reader* rd, swf_line_style* outLineStyle )
+int swf_line_style2__parse( swf_reader* rd, swf_shape_version shapeVersion, swf_line_style* outLineStyle )
 {
 	memset( outLineStyle, 0, sizeof( swf_line_style ) );
 
@@ -124,7 +124,7 @@ int swf_line_style2__parse( swf_reader* rd, swf_line_style* outLineStyle )
 	else if( hasFillFlag == 1 )
 	{
 		swf_fill_style fillType;
-		if( swf_fill_style__parse( rd, &fillType ) < 0 )
+		if( swf_fill_style__parse( rd, shapeVersion, &fillType ) < 0 )
 			return -1;
 
 		outLineStyle->color = fillType.color;
@@ -135,22 +135,15 @@ int swf_line_style2__parse( swf_reader* rd, swf_line_style* outLineStyle )
 
 int swf_line_style_array__parse( swf_reader* rd, swf_shape_version shapeVersion, swf_line_style_array* outLineStyleArray )
 {
-	uint8_t lineStyleCount;
-	if( swf_reader__read_bytes( rd, &lineStyleCount, 1 ) < 0 )
 	memset( outLineStyleArray, 0, sizeof( swf_line_style_array ) );
+
+	if( swf_reader__read_bytes( rd, &outLineStyleArray->styleCount, 1 ) < 0 )
 		return -1;
 
-	if( lineStyleCount == 0xFF )
+	if( outLineStyleArray->styleCount == 0xFF )
 	{
-		uint16_t lineStyleCountExtended;
-		if( swf_reader__read_bytes( rd, &lineStyleCountExtended, 2 ) < 0 )
+		if( swf_reader__read_bytes( rd, &outLineStyleArray->styleCount, 2 ) < 0 )
 			return -1;
-
-		outLineStyleArray->styleCount = lineStyleCountExtended;
-	}
-	else
-	{
-		outLineStyleArray->styleCount = ( uint16_t )lineStyleCount;
 	}
 
 	outLineStyleArray->styles = malloc( outLineStyleArray->styleCount * sizeof( swf_line_style ) );
@@ -159,7 +152,7 @@ int swf_line_style_array__parse( swf_reader* rd, swf_shape_version shapeVersion,
 	{
 		if( shapeVersion == SWF_SHAPE4 )
 		{
-			if( swf_line_style2__parse( rd, &outLineStyleArray->styles[ i ] ) < 0 )
+			if( swf_line_style2__parse( rd, shapeVersion, &outLineStyleArray->styles[ i ] ) < 0 )
 				return -1;
 		}
 		else
