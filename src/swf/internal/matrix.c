@@ -17,6 +17,7 @@
 
 #include "matrix.h"
 
+#include "internal/fixed_point.h"
 #include "internal/reader.h"
 
 #include <stdint.h>
@@ -36,7 +37,47 @@ int swf_matrix__parse( swf_reader* rd, swf_matrix* outMatrix )
 		if( swf_reader__read_bits( rd, &nScaleBits, 5 ) < 0 )
 			return -1;
 
+		swf_fixed_point scaleX;
+		if( swf_fixed_point__parse( rd, nScaleBits, &scaleX ) < 0 )
+			return -1;
+
+		swf_fixed_point scaleY;
+		if( swf_fixed_point__parse( rd, nScaleBits, &scaleY ) < 0 )
+			return -1;
 	}
+
+	uint8_t hasRotate = 0;
+	if( swf_reader__read_bits( rd, &hasRotate, 1 ) < 0 )
+		return -1;
+
+	if( hasRotate == 1 )
+	{
+		uint8_t nRotateBits = 0;
+		if( swf_reader__read_bits( rd, &nRotateBits, 5 ) < 0 )
+			return -1;
+
+		swf_fixed_point rotateSkew0;
+		if( swf_fixed_point__parse( rd, nRotateBits, &rotateSkew0 ) < 0 )
+			return -1;
+
+		swf_fixed_point rotateSkew1;
+		if( swf_fixed_point__parse( rd, nRotateBits, &rotateSkew1 ) < 0 )
+			return -1;
+	}
+
+	uint8_t translateBits = 0;
+	if( swf_reader__read_bits( rd, &translateBits, 5 ) < 0 )
+		return -1;
+
+	int32_t translateX = 0;
+	if( swf_reader__read_bits( rd, &translateX, translateBits ) < 0 )
+		return -1;
+
+	int32_t translateY = 0;
+	if( swf_reader__read_bits( rd, &translateY, translateBits ) < 0 )
+		return -1;
+
+	/* TODO: Calculate matrix elements */
 
 	return 0;
 }
