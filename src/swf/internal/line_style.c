@@ -22,9 +22,12 @@
 #include "internal/reader.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 int swf_line_style__parse( swf_reader* rd, swf_shape_version shapeVersion, swf_line_style* outLineStyle )
 {
+	memset( outLineStyle, 0, sizeof( swf_line_style ) );
+
 	if( swf_reader__read_bytes( rd, &outLineStyle->width, 2 ) < 0 )
 		return -1;
 
@@ -62,6 +65,8 @@ int swf_line_style__parse( swf_reader* rd, swf_shape_version shapeVersion, swf_l
 
 int swf_line_style2__parse( swf_reader* rd, swf_line_style* outLineStyle )
 {
+	memset( outLineStyle, 0, sizeof( swf_line_style ) );
+
 	if( swf_reader__read_bytes( rd, &outLineStyle->width, 2 ) < 0 )
 		return -1;
 
@@ -132,6 +137,7 @@ int swf_line_style_array__parse( swf_reader* rd, swf_shape_version shapeVersion,
 {
 	uint8_t lineStyleCount;
 	if( swf_reader__read_bytes( rd, &lineStyleCount, 1 ) < 0 )
+	memset( outLineStyleArray, 0, sizeof( swf_line_style_array ) );
 		return -1;
 
 	if( lineStyleCount == 0xFF )

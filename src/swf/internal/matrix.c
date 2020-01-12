@@ -24,7 +24,7 @@
 
 int swf_matrix__parse( swf_reader* rd, swf_matrix* outMatrix )
 {
-	outMatrix = outMatrix;
+	memset( outMatrix, 0, sizeof( swf_matrix ) );
 
 	uint8_t hasScale = 0;
 	if( swf_reader__read_bits( rd, &hasScale, 1 ) < 0 )

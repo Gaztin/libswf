@@ -21,9 +21,12 @@
 #include "internal/reader.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 int swf_fill_style__parse( swf_reader* rd, swf_shape_version shapeVersion, swf_fill_style* outFillStyle )
 {
+	memset( outFillStyle, 0, sizeof( swf_fill_style ) );
+
 	if( swf_reader__read_bytes( rd, &outFillStyle->type, 1 ) < 0 )
 		return -1;
 
