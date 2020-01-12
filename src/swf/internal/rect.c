@@ -23,14 +23,28 @@
 
 int swf_rect__parse( swf_reader* rd, swf_rect* outRect )
 {
-	rd->byteOrder ^= 1;
 	memset( outRect, 0, sizeof( swf_rect ) );
-	if( swf_reader__read_bits( rd, &outRect->nbits, 5 ) < 0 ) return -1;
-	if( swf_reader__read_bits( rd, &outRect->xMin, outRect->nbits ) < 0 ) return -1;
-	if( swf_reader__read_bits( rd, &outRect->xMax, outRect->nbits ) < 0 ) return -1;
-	if( swf_reader__read_bits( rd, &outRect->yMin, outRect->nbits ) < 0 ) return -1;
-	if( swf_reader__read_bits( rd, &outRect->yMax, outRect->nbits ) < 0 ) return -1;
+
+	rd->byteOrder ^= 1;
+
+	uint8_t nbits = 0;
+	if( swf_reader__read_bits( rd, &nbits, 5 ) < 0 )
+		return -1;
+
+	if( swf_reader__read_bits( rd, &outRect->xMin, nbits ) < 0 )
+		return -1;
+
+	if( swf_reader__read_bits( rd, &outRect->xMax, nbits ) < 0 )
+		return -1;
+
+	if( swf_reader__read_bits( rd, &outRect->yMin, nbits ) < 0 )
+		return -1;
+
+	if( swf_reader__read_bits( rd, &outRect->yMax, nbits ) < 0 )
+		return -1;
+
 	swf_reader__byte_align( rd );
+
 	rd->byteOrder ^= 1;
 
 	return 0;

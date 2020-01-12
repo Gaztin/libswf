@@ -27,34 +27,43 @@
 int swf_tag__parse( swf_reader* rd, swf_tag* outTag )
 {
 	memset( outTag, 0, sizeof( swf_tag ) );
+
 	uint16_t tagCodeAndLength = 0;
-	if( swf_reader__read_bytes( rd, &tagCodeAndLength, sizeof( tagCodeAndLength ) ) < 0 ) return -1;
+	if( swf_reader__read_bytes( rd, &tagCodeAndLength, 2 ) < 0 )
+		return -1;
+
 	outTag->type   = ( tagCodeAndLength & 0xFFC0 ) >> 6;
 	outTag->length = ( tagCodeAndLength & 0x3F );
+
 	if( outTag->length == 0x3F )
 	{
 		outTag->length = 0;
-		if( swf_reader__read_bytes( rd, &outTag->length, sizeof( outTag->length ) ) < 0 ) return -1;
+		if( swf_reader__read_bytes( rd, &outTag->length, 4 ) < 0 )
+			return -1;
 	}
-
-	outTag->data = malloc( outTag->length );
 
 	/* TODO: Parse meta-data */
 	switch( outTag->type )
 	{
 		case SWF_TT_SetBackgroundColor:
 		{
+			outTag->data = malloc( sizeof( swf_tag_SetBackgroundColor ) );
+
 			swf_rgb rgb;
-			swf_rgb__parse( rd, &rgb );
+			if( swf_rgb__parse( rd, &rgb ) < 0 )
+				return -1;
+
 			( ( swf_tag_SetBackgroundColor* )outTag->data )->r = rgb.r;
 			( ( swf_tag_SetBackgroundColor* )outTag->data )->g = rgb.g;
 			( ( swf_tag_SetBackgroundColor* )outTag->data )->b = rgb.b;
-			break;
-		}
 
-		default: /* Skip unsupported tags */
+		} break;
+
+		default: /* Skip unsupported and empty tags */
+		{
 			rd->cur += outTag->length;
-			break;
+
+		} break;
 	}
 
 	return 0;

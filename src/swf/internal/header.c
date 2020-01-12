@@ -106,33 +106,52 @@ int swf_header__parse( swf_reader* rd, swf_header* outHeader )
 
 	/* Read signature and determine byte order */
 	if( rd->cur[ 1 ] == 'W' && rd->cur[ 2 ] == 'S' )
+	{
 		rd->byteOrder = BO_LittleEndian;
+	}
 	else if( rd->cur[ 1 ] == 234 && rd->cur[ 2 ] == 202 )
+	{
 		rd->byteOrder = BO_BigEndian;
+	}
 	else
+	{
+		return -1;
+	}
+
+	if( swf_reader__read_bytes( rd, &outHeader->signature, sizeof( outHeader->signature ) ) < 0 )
 		return -1;
 
-	if( swf_reader__read_bytes( rd, &outHeader->signature,  sizeof( outHeader->signature  ) ) < 0 ) return -1;
-	if( swf_reader__read_bytes( rd, &outHeader->version,    sizeof( outHeader->version    ) ) < 0 ) return -1;
-	if( swf_reader__read_bytes( rd, &outHeader->fileLength, sizeof( outHeader->fileLength ) ) < 0 ) return -1;
+	if( swf_reader__read_bytes( rd, &outHeader->version, sizeof( outHeader->version ) ) < 0 )
+		return -1;
+
+	if( swf_reader__read_bytes( rd, &outHeader->fileLength, sizeof( outHeader->fileLength ) ) < 0 )
+		return -1;
 
 	switch( outHeader->signature[ 0 ] )
 	{
 		/* No compression */
 		case 'F':
-			break;
+		{
+		} break;
 
 		/* ZLib compression */
 		case 'C':
-			if( decompress_zlib( rd ) < 0 ) return -1;
-			break;
+		{
+			if( decompress_zlib( rd ) < 0 )
+				return -1;
+
+		} break;
 
 		/* LZMA compression */
 		case 'Z':
+		{
 			return -1; /* Not supported */
+		}
 
 		default:
+		{
 			return -1;
+		}
 	}
 
 	if( swf_rect__parse( rd, &outHeader->frameSize ) < 0 )
