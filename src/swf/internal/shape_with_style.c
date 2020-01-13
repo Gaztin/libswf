@@ -127,8 +127,6 @@ int swf_shape_with_style__parse( swf_reader* rd, swf_shape_version shapeVersion,
 			if( swf_reader__read_bits( rd, &numBits, 4 ) < 0 )
 				return -1;
 
-			numBits -= 2;
-
 			/* StraightEdgeRecord */
 			if( straightFlag == 1 )
 			{
