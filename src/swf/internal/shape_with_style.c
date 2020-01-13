@@ -53,72 +53,68 @@ int swf_shape_with_style__parse( swf_reader* rd, swf_shape_version shapeVersion,
 
 			/* EndShapeRecord */
 			if( flagInformation == 0 )
-			{
-				return 0;
-			}
+				break;
 
 			/* StyleChangeRecord */
-			else
+
+			/* StateMoveTo */
+			if( flagInformation & 0x10 )
 			{
-				/* StateMoveTo */
-				if( flagInformation & 0x10 )
-				{
-					uint8_t moveBits = 0;
-					if( swf_reader__read_bits( rd, &moveBits, 5 ) < 0 )
-						return -1;
+				uint8_t moveBits = 0;
+				if( swf_reader__read_bits( rd, &moveBits, 5 ) < 0 )
+					return -1;
 
-					int32_t moveDeltaX = 0;
-					if( swf_reader__read_bits( rd, &moveDeltaX, moveBits ) < 0 )
-						return -1;
+				int32_t moveDeltaX = 0;
+				if( swf_reader__read_bits( rd, &moveDeltaX, moveBits ) < 0 )
+					return -1;
 
-					int32_t moveDeltaY = 0;
-					if( swf_reader__read_bits( rd, &moveDeltaY, moveBits ) < 0 )
-						return -1;
-				}
+				int32_t moveDeltaY = 0;
+				if( swf_reader__read_bits( rd, &moveDeltaY, moveBits ) < 0 )
+					return -1;
+			}
 
-				/* StateFillStyle0 */
-				if( flagInformation & 0x08 )
-				{
-					uint32_t fillStyle0 = 0;
-					if( swf_reader__read_bits( rd, &fillStyle0, numFillBits ) < 0 )
-						return -1;
-				}
+			/* StateFillStyle0 */
+			if( flagInformation & 0x08 )
+			{
+				uint32_t fillStyle0 = 0;
+				if( swf_reader__read_bits( rd, &fillStyle0, numFillBits ) < 0 )
+					return -1;
+			}
 
-				/* StateFillStyle1 */
-				if( flagInformation & 0x04 )
-				{
-					uint32_t fillStyle1 = 0;
-					if( swf_reader__read_bits( rd, &fillStyle1, numFillBits ) < 0 )
-						return -1;
-				}
+			/* StateFillStyle1 */
+			if( flagInformation & 0x04 )
+			{
+				uint32_t fillStyle1 = 0;
+				if( swf_reader__read_bits( rd, &fillStyle1, numFillBits ) < 0 )
+					return -1;
+			}
 
-				/* StateLineStyle */
-				if( flagInformation & 0x02 )
-				{
-					uint32_t lineStyle = 0;
-					if( swf_reader__read_bits( rd, &lineStyle, numLineBits ) < 0 )
-						return -1;
-				}
+			/* StateLineStyle */
+			if( flagInformation & 0x02 )
+			{
+				uint32_t lineStyle = 0;
+				if( swf_reader__read_bits( rd, &lineStyle, numLineBits ) < 0 )
+					return -1;
+			}
 
-				/* StateNewStyles */
-				if( flagInformation & 0x01 )
-				{
-					swf_fill_style_array fillStyles;
-					if( swf_fill_style_array__parse( rd, shapeVersion, &fillStyles ) < 0 )
-						return -1;
+			/* StateNewStyles */
+			if( flagInformation & 0x01 )
+			{
+				swf_fill_style_array fillStyles;
+				if( swf_fill_style_array__parse( rd, shapeVersion, &fillStyles ) < 0 )
+					return -1;
 
-					swf_line_style_array lineStyles;
-					if( swf_line_style_array__parse( rd, shapeVersion, &lineStyles ) < 0 )
-						return -1;
+				swf_line_style_array lineStyles;
+				if( swf_line_style_array__parse( rd, shapeVersion, &lineStyles ) < 0 )
+					return -1;
 
-					uint8_t numFillBits2 = 0;
-					if( swf_reader__read_bits( rd, &numFillBits2, 4 ) < 0 )
-						return -1;
+				uint8_t numFillBits2 = 0;
+				if( swf_reader__read_bits( rd, &numFillBits2, 4 ) < 0 )
+					return -1;
 
-					uint8_t numLineBits2 = 0;
-					if( swf_reader__read_bits( rd, &numLineBits2, 4 ) < 0 )
-						return -1;
-				}
+				uint8_t numLineBits2 = 0;
+				if( swf_reader__read_bits( rd, &numLineBits2, 4 ) < 0 )
+					return -1;
 			}
 		}
 		else
@@ -183,4 +179,6 @@ int swf_shape_with_style__parse( swf_reader* rd, swf_shape_version shapeVersion,
 			}
 		}
 	}
+
+	return 0;
 }
