@@ -27,6 +27,24 @@ static void draw_swf_tag( SDL_Renderer* renderer, swf_tag* tag )
 			SDL_RenderPresent( renderer );
 
 		} break;
+
+		case SWF_TT_DefineShape:
+		case SWF_TT_DefineShape2:
+		case SWF_TT_DefineShape3:
+		case SWF_TT_DefineShape4:
+		{
+			auto tagData = static_cast< swf_tag_DefineShape* >( swf_get_tag_data( tag ) );
+
+			SDL_Rect rect;
+			rect.x = tagData->x / 20;
+			rect.y = tagData->y / 20;
+			rect.w = tagData->width / 20;
+			rect.h = tagData->height / 20;
+
+			SDL_SetRenderDrawColor( renderer, 0xFF, 0x00, 0x00, 0xFF );
+			SDL_RenderDrawRect( renderer, &rect );
+
+		} break;
 	}
 }
 

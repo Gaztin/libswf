@@ -30,7 +30,11 @@ typedef enum swf_tag_type
 {
 	SWF_TT_End                =  0,
 	SWF_TT_ShowFrame          =  1,
+	SWF_TT_DefineShape        =  2,
 	SWF_TT_SetBackgroundColor =  9,
+	SWF_TT_DefineShape2       =  22,
+	SWF_TT_DefineShape3       =  32,
+	SWF_TT_DefineShape4       =  83,
 	SWF_TT_FileAttributes     = 69,
 } swf_tag_type;
 
@@ -40,6 +44,16 @@ typedef struct swf_tag_SetBackgroundColor
 	uint8_t g;
 	uint8_t b;
 } swf_tag_SetBackgroundColor;
+
+typedef struct swf_tag_DefineShape
+{
+	uint16_t id;
+	uint32_t x;
+	uint32_t y;
+	uint32_t width;
+	uint32_t height;
+
+} swf_tag_DefineShape;
 
 extern swf_tag_type swf_get_tag_type( swf_tag* tag );
 extern void*        swf_get_tag_data( swf_tag* tag );
