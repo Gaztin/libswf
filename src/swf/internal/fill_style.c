@@ -62,14 +62,6 @@ int swf_fill_style__parse( swf_reader* rd, swf_shape_version shapeVersion, swf_f
 			}
 		}
 	}
-	else
-	{
-		swf_rgb color;
-		if( swf_rgb__parse( rd, &color ) < 0 )
-			return -1;
-
-		outFillStyle->color = 0xFF000000 | ( uint32_t )color.b << 16 | ( uint32_t )color.g << 8 | ( uint32_t )color.r;
-	}
 
 	switch( outFillStyle->type )
 	{
