@@ -120,6 +120,8 @@ int swf_reader__read_bits( swf_reader* rd, void* dst, size_t nbits )
 
 size_t swf_reader__read_bytes( swf_reader* rd, void* dst, size_t size )
 {
+	swf_reader__byte_align( rd );
+
 	for( size_t i = 0; i < size; ++i )
 	{
 		if( swf_reader__read_bits( rd, ( uint8_t* )dst + i, 8 ) < 0 )

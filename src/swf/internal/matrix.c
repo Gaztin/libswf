@@ -27,6 +27,8 @@ int swf_matrix__parse( swf_reader* rd, swf_matrix* outMatrix )
 {
 	memset( outMatrix, 0, sizeof( swf_matrix ) );
 
+	swf_reader__byte_align( rd );
+
 	uint8_t hasScale = 0;
 	if( swf_reader__read_bits( rd, &hasScale, 1 ) < 0 )
 		return -1;
@@ -76,8 +78,6 @@ int swf_matrix__parse( swf_reader* rd, swf_matrix* outMatrix )
 	int32_t translateY = 0;
 	if( swf_reader__read_bits( rd, &translateY, translateBits ) < 0 )
 		return -1;
-
-	swf_reader__byte_align( rd );
 
 	/* TODO: Calculate matrix elements */
 

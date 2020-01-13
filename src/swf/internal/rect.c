@@ -27,6 +27,8 @@ int swf_rect__parse( swf_reader* rd, swf_rect* outRect )
 
 	rd->byteOrder ^= 1;
 
+	swf_reader__byte_align( rd );
+
 	uint8_t nbits = 0;
 	if( swf_reader__read_bits( rd, &nbits, 5 ) < 0 )
 		return -1;
@@ -42,8 +44,6 @@ int swf_rect__parse( swf_reader* rd, swf_rect* outRect )
 
 	if( swf_reader__read_bits( rd, &outRect->yMax, nbits ) < 0 )
 		return -1;
-
-	swf_reader__byte_align( rd );
 
 	rd->byteOrder ^= 1;
 
