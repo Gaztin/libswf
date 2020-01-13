@@ -29,6 +29,8 @@ typedef struct swf_fixed_point
 
 } swf_fixed_point;
 
-extern int swf_fixed_point__parse( swf_reader* rd, uint8_t nbits, swf_fixed_point* outFixedPoint );
+extern int swf_fixed_point_8__parse        ( swf_reader* rd, swf_fixed_point* outFixedPoint );
+extern int swf_fixed_point_16__parse       ( swf_reader* rd, swf_fixed_point* outFixedPoint );
+extern int swf_fixed_point_bit_value__parse( swf_reader* rd, uint8_t nbits, swf_fixed_point* outFixedPoint );
 
 #endif

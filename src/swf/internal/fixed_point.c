@@ -21,15 +21,46 @@
 
 #include "internal/reader.h"
 
-int swf_fixed_point__parse( swf_reader* rd, uint8_t nbits, swf_fixed_point* outFixedPoint )
+int swf_fixed_point_8__parse( swf_reader* rd, swf_fixed_point* outFixedPoint )
 {
 	memset( outFixedPoint, 0, sizeof( swf_fixed_point ) );
 
-	if( swf_reader__read_bits( rd, &outFixedPoint->fractional, nbits ) < 0 )
+	swf_reader__byte_align( rd );
+
+	if( swf_reader__read_bytes( rd, &outFixedPoint->fractional, 1 ) < 0 )
 		return -1;
 
-	if( swf_reader__read_bits( rd, &outFixedPoint->integer, nbits ) < 0 )
+	if( swf_reader__read_bytes( rd, &outFixedPoint->integer, 1 ) < 0 )
 		return -1;
+
+	return 0;
+}
+
+int swf_fixed_point_16__parse( swf_reader* rd, swf_fixed_point* outFixedPoint )
+{
+	memset( outFixedPoint, 0, sizeof( swf_fixed_point ) );
+
+	swf_reader__byte_align( rd );
+
+	if( swf_reader__read_bytes( rd, &outFixedPoint->fractional, 2 ) < 0 )
+		return -1;
+
+	if( swf_reader__read_bytes( rd, &outFixedPoint->integer, 2 ) < 0 )
+		return -1;
+
+	return 0;
+}
+
+int swf_fixed_point_bit_value__parse( swf_reader* rd, uint8_t nbits, swf_fixed_point* outFixedPoint )
+{
+	memset( outFixedPoint, 0, sizeof( swf_fixed_point ) );
+
+	uint32_t bitValue = 0;
+	if( swf_reader__read_bits( rd, &bitValue, nbits ) < 0 )
+		return -1;
+
+	outFixedPoint->fractional = ( uint16_t )( ( bitValue & 0x0000FFFF ) );
+	outFixedPoint->integer    = (  int16_t )( ( bitValue & 0xFFFF0000 ) >> 16 );
 
 	return 0;
 }

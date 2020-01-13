@@ -90,7 +90,7 @@ int swf_focal_gradient__parse( swf_reader* rd, swf_shape_version shapeVersion, s
 	if( swf_gradient__parse( rd, shapeVersion, &outFocalGradient->super ) < 0 )
 		return -1;
 
-	if( swf_fixed_point__parse( rd, 8, &outFocalGradient->focalPoint ) < 0 )
+	if( swf_fixed_point_8__parse( rd, &outFocalGradient->focalPoint ) < 0 )
 		return -1;
 
 	return 0;

@@ -40,11 +40,11 @@ int swf_matrix__parse( swf_reader* rd, swf_matrix* outMatrix )
 			return -1;
 
 		swf_fixed_point scaleX;
-		if( swf_fixed_point__parse( rd, nScaleBits, &scaleX ) < 0 )
+		if( swf_fixed_point_bit_value__parse( rd, nScaleBits, &scaleX ) < 0 )
 			return -1;
 
 		swf_fixed_point scaleY;
-		if( swf_fixed_point__parse( rd, nScaleBits, &scaleY ) < 0 )
+		if( swf_fixed_point_bit_value__parse( rd, nScaleBits, &scaleY ) < 0 )
 			return -1;
 	}
 
@@ -59,11 +59,11 @@ int swf_matrix__parse( swf_reader* rd, swf_matrix* outMatrix )
 			return -1;
 
 		swf_fixed_point rotateSkew0;
-		if( swf_fixed_point__parse( rd, nRotateBits, &rotateSkew0 ) < 0 )
+		if( swf_fixed_point_bit_value__parse( rd, nRotateBits, &rotateSkew0 ) < 0 )
 			return -1;
 
 		swf_fixed_point rotateSkew1;
-		if( swf_fixed_point__parse( rd, nRotateBits, &rotateSkew1 ) < 0 )
+		if( swf_fixed_point_bit_value__parse( rd, nRotateBits, &rotateSkew1 ) < 0 )
 			return -1;
 	}
 
