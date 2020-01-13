@@ -29,6 +29,7 @@ typedef struct swf_tag swf_tag;
 typedef enum swf_tag_type
 {
 	SWF_TT_End                =  0,
+	SWF_TT_ShowFrame          =  1,
 	SWF_TT_SetBackgroundColor =  9,
 	SWF_TT_FileAttributes     = 69,
 } swf_tag_type;

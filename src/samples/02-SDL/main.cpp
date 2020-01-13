@@ -20,8 +20,13 @@ static void draw_swf_tag( SDL_Renderer* renderer, swf_tag* tag )
 			SDL_SetRenderDrawColor( renderer, tagData->r, tagData->g, tagData->b, 0xff );
 			SDL_RenderClear( renderer );
 
-			break;
-		}
+		} break;
+
+		case SWF_TT_ShowFrame:
+		{
+			SDL_RenderPresent( renderer );
+
+		} break;
 	}
 }
 
@@ -78,8 +83,6 @@ extern "C" int SDL_main( int /*argc*/, char* /*argv*/[] )
 			if( event.type == SDL_QUIT )
 				quit = true;
 		}
-
-		SDL_RenderPresent( renderer );
 	}
 
 	/* Clean up */
