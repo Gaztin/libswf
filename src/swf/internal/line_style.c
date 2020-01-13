@@ -141,25 +141,28 @@ int swf_line_style_array__parse( swf_reader* rd, swf_shape_version shapeVersion,
 	if( swf_reader__read_bytes( rd, &outLineStyleArray->styleCount, 1 ) < 0 )
 		return -1;
 
-	if( outLineStyleArray->styleCount == 0xFF )
+	if( outLineStyleArray->styleCount != 0 )
 	{
-		if( swf_reader__read_bytes( rd, &outLineStyleArray->styleCount, 2 ) < 0 )
-			return -1;
-	}
-
-	outLineStyleArray->styles = malloc( outLineStyleArray->styleCount * sizeof( swf_line_style ) );
-
-	for( size_t i = 0; i < outLineStyleArray->styleCount; ++i )
-	{
-		if( shapeVersion == SWF_SHAPE4 )
+		if( outLineStyleArray->styleCount == 0xFF )
 		{
-			if( swf_line_style2__parse( rd, shapeVersion, &outLineStyleArray->styles[ i ] ) < 0 )
+			if( swf_reader__read_bytes( rd, &outLineStyleArray->styleCount, 2 ) < 0 )
 				return -1;
 		}
-		else
+
+		outLineStyleArray->styles = malloc( outLineStyleArray->styleCount * sizeof( swf_line_style ) );
+
+		for( size_t i = 0; i < outLineStyleArray->styleCount; ++i )
 		{
-			if( swf_line_style__parse( rd, shapeVersion, &outLineStyleArray->styles[ i ] ) < 0 )
-				return -1;
+			if( shapeVersion == SWF_SHAPE4 )
+			{
+				if( swf_line_style2__parse( rd, shapeVersion, &outLineStyleArray->styles[ i ] ) < 0 )
+					return -1;
+			}
+			else
+			{
+				if( swf_line_style__parse( rd, shapeVersion, &outLineStyleArray->styles[ i ] ) < 0 )
+					return -1;
+			}
 		}
 	}
 

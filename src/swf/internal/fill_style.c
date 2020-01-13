@@ -118,18 +118,21 @@ int swf_fill_style_array__parse( swf_reader* rd, swf_shape_version shapeVersion,
 	if( swf_reader__read_bytes( rd, &outFillStyleArray->styleCount, 1 ) < 0 )
 		return -1;
 
-	if( outFillStyleArray->styleCount == 0xFF )
+	if( outFillStyleArray->styleCount != 0 )
 	{
-		if( swf_reader__read_bytes( rd, &outFillStyleArray->styleCount, 2 ) < 0 )
-			return -1;
-	}
+		if( outFillStyleArray->styleCount == 0xFF )
+		{
+			if( swf_reader__read_bytes( rd, &outFillStyleArray->styleCount, 2 ) < 0 )
+				return -1;
+		}
 
-	outFillStyleArray->styles = malloc( outFillStyleArray->styleCount * sizeof( swf_fill_style ) );
+		outFillStyleArray->styles = malloc( outFillStyleArray->styleCount * sizeof( swf_fill_style ) );
 
-	for( size_t i = 0; i < outFillStyleArray->styleCount; ++i )
-	{
-		if( swf_fill_style__parse( rd, shapeVersion, &outFillStyleArray->styles[ i ] ) < 0 )
-			return -1;
+		for( size_t i = 0; i < outFillStyleArray->styleCount; ++i )
+		{
+			if( swf_fill_style__parse( rd, shapeVersion, &outFillStyleArray->styles[ i ] ) < 0 )
+				return -1;
+		}
 	}
 
 	return 0;
