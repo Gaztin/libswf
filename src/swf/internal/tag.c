@@ -109,6 +109,8 @@ int swf_tag__parse( swf_reader* rd, swf_tag* outTag )
 					uint8_t reserved = 0;
 					if( swf_reader__read_bits( rd, &reserved, 5 ) < 0 )
 						return -1;
+					if( reserved != 0 )
+						return -1;
 
 					uint8_t usesFillWindingRule = 0;
 					if( swf_reader__read_bits( rd, &usesFillWindingRule, 1 ) < 0 )
