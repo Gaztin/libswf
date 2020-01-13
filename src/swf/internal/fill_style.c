@@ -106,6 +106,15 @@ int swf_fill_style__parse( swf_reader* rd, swf_shape_version shapeVersion, swf_f
 				return -1;
 
 		} break;
+
+		case SWF_FillStyle_Solid:
+		{
+		} break;
+
+		default:
+		{
+			return -1;
+		}
 	}
 
 	return 0;
