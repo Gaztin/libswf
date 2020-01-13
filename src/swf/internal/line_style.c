@@ -45,6 +45,7 @@ int swf_line_style__parse( swf_reader* rd, swf_shape_version shapeVersion, swf_l
 		} break;
 
 		case SWF_SHAPE3:
+		case SWF_SHAPE4:
 		{
 			swf_rgba rgba;
 			if( swf_rgba__parse( rd, &rgba ) < 0 )

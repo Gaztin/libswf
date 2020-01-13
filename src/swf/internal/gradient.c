@@ -42,6 +42,7 @@ int swf_gradient_record__parse( swf_reader* rd, swf_shape_version shapeVersion, 
 		} break;
 
 		case SWF_SHAPE3:
+		case SWF_SHAPE4:
 		{
 			swf_rgba rgba;
 			if( swf_rgba__parse( rd, &rgba ) < 0 )
